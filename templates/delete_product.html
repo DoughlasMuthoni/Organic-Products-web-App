@@ -1,0 +1,18 @@
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} <title> Delete</title> {% endblock %}
+{% block content %}
+
+<h1 class="txt-danger ml-3">Are you sure you want to delete this product?</h1>
+
+<p class="ml-3 text-success">Product: {{ product.title }}</p>
+
+<form method="post" class="form ml-3">
+    {% csrf_token %}
+    <button type="submit" style="color: white; background-color: red; border: none; border-radius: 30;margin: 10;">Yes, Delete</button>
+    
+</form>
+<a href="{% url 'core:product_list_ui' %}" class="btn btn-primary mt-2 ml-3">Cancel</a>
+
+{% endblock %}

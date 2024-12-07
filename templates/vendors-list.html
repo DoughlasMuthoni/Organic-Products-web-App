@@ -1,0 +1,47 @@
+
+
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block title %} <title> Categories</title> {% endblock %}
+
+ <!-- Bootstrap CSS -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+ 
+{% block content %}
+<div class="container mt-5">
+     <div><h5>We have ({{vendors.count }}) Vendor{{vendors.count|pluralize}}</h5></div><hr>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Vendor Card 1 -->
+        {% for v in vendors %} 
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ v.image.url }}" class="card-img-top" alt="Vendor Image">
+                <div class="card-body">
+                    <div><h5>{{v.title}}</h5></div>
+                    <div class="discount-tag">20% OFF</div>
+                    <h5 class="card-title">{{ v.vendors.all.count }}</h5>
+                    <p class="card-text">{{v.description}}</p>
+                    <p>{{v.in_stock}}</p>
+                    <p>{{ v.date }}</p>
+                    <p>{{v.address}}</p>
+                    <p>{{v.contact}}</p>
+                    <div class="rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                        <i class="bi bi-star"></i> 4.5
+                    </div>
+                    <a href="{% url 'core:vendor-details' v.vid %}"><div class="btn btn-success">Details</div></a>
+                    
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block title %} <title>Product Details</title> {% endblock %}
+
+{% block content %}
+<!-- Hero Section Begin -->
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>{{ categories.count }} All Categories</span>
+                    </div>
+                    <ul>
+                        {% for c in categories %}
+                        <li><a href="{% url 'core:category-product-list' c.cid %}">{{ c.title }} ({{ c.category.all.count }})</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="#">
+                            <div class="hero__search__categories">
+                                All Categories
+                                <span class="arrow_carrot-down"></span>
+                                <ul></ul>
+                            </div>
+                            <input type="text" placeholder="What do you need?">
+                            <button type="submit" class="site-btn">SEARCH</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>+254 707 264 913</h5>
+                            <span>support 24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+
+<!-- Product Details Section Begin -->
+<section class="pro-details spad">
+    <div class="container">
+        <div class="row">
+            <!-- Left Column with Product Images -->
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__pic">
+                    <div class="product__details__pic__item">
+                        <img class="product__details__pic__item--large" src="{{ product.image.url }}" alt="Product Image">
+                    </div>
+                    <div class="product__details__pic__slider owl-carousel">
+                        {% for p in product_images %}
+                            <img data-imgbigurl="{{ p.image.url }}" src="{{ p.image.url }}" alt="Product Image">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column with Product Details -->
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__text">
+                    <h3>{{ product.title }}</h3>
+                    <div class="product__details__rating">
+                        <!-- <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-half-o"></i>
+                        <span>(18 reviews)</span> -->
+                    </div>
+                    <div class="product-price">
+                        <div class="product__item__price"><span>Ksh</span>{{ product.price }}</div>
+                    </div>
+                    <p>{{ product.description|safe }}</p>
+                    <div class="product__details__quantity">
+                        <ul>
+                            <li><b>Product Type:</b> <span>{{ product.type }}</span></li>
+                            <li><b>D.O.M:</b> <span>{{ product.mfd|date:"d M, Y" }}</span></li>
+                            <li><b>Life:</b> <span>{{ product.life }}</span></li>
+                            <h4>Tags</h4>
+<div class="sidebar__item__tag">
+    <span>
+        {% for tag in product.tags.all %}
+            {% if tag.slug %}
+                <a href="{% url 'core:tags' tag.slug %}" rel="tags">{{ tag.name }}</a>
+            {% endif %}
+        {% endfor %}
+    </span>
+</div>
+
+                            <li><b>Stock:</b> <span>{{ product.stock_count }}</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- New Cards Section -->
+<div class="row mt-4">
+    <!-- Delivery, Return & Warranty Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Delivery</h5>
+                <span>
+                    Address: {{ address.address }} 
+                    <br>
+                    {% if address.status %}
+                        <span class="text-success">Verified Address</span>
+                    {% else %}
+                        <span class="text-danger">Unverified Address</span>
+                    {% endif %}
+                </span>
+                <hr>
+                <h5 class="card-title">Return & Warranty</h5>
+                <p class="card-text">{{ product.vendor.authentic_rating }}% Authentic</p>
+                <p class="card-text">{{ product.vendor.days_return }} days Return</p>
+                <p class="card-text">{{ product.vendor.warranty_period }} months Warranty</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor & Rating Counter Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Vendor</h5>
+                <p class="card-text">Name: {{ product.vendor.title }}</p> <!-- Assuming vendor has a 'name' field -->
+                <p class="card-text">Rating: {{ product.vendor.rating }}</p>  <!-- Assuming vendor has a 'rating' field -->
+                <p class="card-text">Address: {{ product.vendor.address }}</p>
+                <p class="card-text">Contact: {{ product.vendor.contact }}</p>
+                <hr>
+                <div class="row rating-counters">
+                    <div class="counter col-4">
+                        <h5>Rating</h5>
+                        <p>92%</p>
+                    </div>
+                    <div class="counter col-4">
+                        <h5>Ship on Time</h5>
+                        <p>{{ product.vendor.shipping_on_time }}%</p>
+                    </div>
+                    <div class="counter col-4">
+                        <h5>Chat Response</h5>
+                        <p>{{ product.vendor.chat_resp_time }}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Related Product Section Begin -->
+        <section class="related-product">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if products %}
+                        <div class="section-title related__product__title">
+                            <h2>Related Products</h2>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row" id="filtered-product">
+                    {% for p in products %}
+                    <div class="col-lg-3">
+                        <div class="product__discount__item">
+                            <div class="product__discount__item__pic set-bg rounded-sm position-relative" data-setbg="{{ p.image.url }}">
+                                <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
+                                    <span>-{{ p.get_percentage|floatformat:0 }}%</span>
+                                </div>
+                                <ul class="product__item__pic__hover">
+                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__discount__item__text">
+                                <h5><a href="#">{{ p.title }}</a></h5>
+                                <div class="product-price">
+                                    <div class="product__item__price"><span>Ksh</span>{{ p.price }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <!-- Related Product Section End -->
+
+    </div>
+</section>
+<!-- Product Details Section End -->
+
+{% endblock %}

@@ -1,0 +1,7 @@
+
+core/__pycache__/
+core/migrations/__pycache__/
+env_organicFood/
+proj_ecommerce/__pycache__/
+user_authens/__pycache__/
+user_authens/migrations/__pycache__/

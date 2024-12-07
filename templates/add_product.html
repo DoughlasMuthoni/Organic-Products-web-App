@@ -1,0 +1,11 @@
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} <title> Add product</title> {% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    {% csrf_token %}
+    {{ product_form.as_p }}
+    <button type="submit" style="color: white; background-color: green; border: none; border-radius: 30;margin: 10;">Add Product</button>
+</form>
+{% endblock %}

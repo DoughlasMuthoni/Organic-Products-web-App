@@ -1,0 +1,34 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-header text-center bg-success text-white">
+                    <h3 class="mb-0">Make a Payment</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'user_authens:stk' %}">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="phone" class="form-label">Phone Number:</label>
+                            <input type="number" class="form-control" id="phone" name="phone" value="254" placeholder="Phone Number">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="amount" class="form-label">Amount:</label>
+                            <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount">
+                        </div>
+
+                        <hr>
+                        <button type="submit" class="btn btn-success w-100">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

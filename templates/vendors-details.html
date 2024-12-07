@@ -1,0 +1,125 @@
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} <title> Home</title> {% endblock %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .vendor-cover {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .vendor-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .socials a {
+            margin: 0 10px;
+        }
+    </style>
+{% block content %}
+
+    <!-- Cover Image Section -->
+    <div class="container-fluid p-0">
+        <img src="{{vendors.cover_image.url}}" class="vendor-cover" alt="Vendor Cover Image">
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Vendor Image on the Left -->
+                <div class="col-md-4 d-flex justify-content-center align-items-center">
+                    <img src="{{vendors.image.url}}" class="vendor-image " style="border-radius: 35px;" alt="Vendor Image">
+                </div>
+    
+                <!-- Vendor Details on the Right -->
+                <div class="col-md-8">
+                    <h2>{{vendor.title}}</h2>
+                    <p><strong>Location:</strong> {{vendor.address}}</p>
+                    <p><strong>Description:</strong> {{vendor.description}}</p>
+                    <span class="text-muted" >Since {{vendor.date}}</span>
+                    <span class="text-muted" >Since {{vendor.contact}}</span>
+    
+                    <!-- Rating Section -->
+                    <p><strong>Rating:</strong> 
+                        <span class="text-warning">★★★★★</span> (4.8/5)
+                    </p>
+    
+                    <!-- Social Media Links -->
+                    <div class="socials">
+                        <a href="#" class="btn btn-primary btn-sm">Facebook</a>
+                        <a href="#" class="btn btn-info btn-sm">Twitter</a>
+                        <a href="#" class="btn btn-danger btn-sm">Instagram</a>
+                        <a href="#" class="btn btn-dark btn-sm">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        {% for p in products %}
+        <div class="col-lg-3 ">
+            <div class="product__discount__item">
+                <div class="product__discount__item__pic set-bg rounded-sm position-relative" data-setbg="{{p.image.url}}">
+                 
+                    <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
+                        <span>-{{ p.get_percentage|floatformat:0}}%</span>
+                    </div>
+                    <ul class="product__item__pic__hover">
+                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                        <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                        <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                    </ul>
+                </div>
+                <div class="product__discount__item__text">
+                    <div>
+                    <span class =" font-small text-muted">{{ p.Category }}</span>
+                 </div>
+                    <h5><a href="#">{{ p.title }}</a></h5>
+                    <div class="product__details__rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-half-o"></i>
+                        <span>(18 reviews)</span>
+                    </div>
+                    <div>
+                    <span class =" font-small text-muted">{{ p.vendor }}</span>
+                    </div>
+                    <div class="product__item__price">Ksh{{ p.price }} </div>
+                    <!-- <div class="product__item__price"><span>Ksh{{ p.old_price }}</span></div> -->
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7 col-md-6">
+            <div class="product__details__text">
+                <h3>{{p.category.title}}</h3>
+                <div class="product__details__rating">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-half-o"></i>
+                    <span>(18 reviews)</span>
+                </div>
+                <div class="product__details__price">Ksh{{p.price}}</div>
+                <p>{{p.description}}</p>
+                <div class="product__details__quantity">
+                    <div class="quantity">
+                        <div class="pro-qty">
+                            <input type="text" value="1">
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="primary-btn">ADD TO CARD</a>
+                <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
+            </div>
+        </div>
+        {% endfor %}
+</div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

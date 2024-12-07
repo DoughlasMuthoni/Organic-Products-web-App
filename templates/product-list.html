@@ -1,0 +1,251 @@
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} <title> Products</title> {% endblock %}
+{% block content %}
+
+ <!-- Hero Section Begin -->
+ <section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>{{categories.count }} All Categories</span>
+                    </div>
+                    <ul>
+                        {% for c in categories  %} 
+                        <li><a href="{% url 'core:category-product-list' c.cid %}">{{c.title}}          ({{c.category.all.count}})</a></li>
+                       {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="#">
+                            <div class="hero__search__categories">
+                                All Categories
+                                <span class="arrow_carrot-down"></span>
+                            </div>
+                            <input type="text" name="q" placeholder="What do yo u need?">
+                            <button type="submit" class="site-btn">SEARCH</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>+65 11.188.888</h5>
+                            <span>support 24/7 time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'assets/img/breadcrumb.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Organi Shop</h2>
+                    <div class="breadcrumb__option">
+                        <a href="{% url 'core:home' %}">Home</a>
+                        <span>Shop</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <div class="sidebar">
+                        <div class="sidebar__item">
+                            <h4>Categories</h4>
+                            <ul>
+                                {% for c in categories %}
+                                <li>
+                                    <label for="category-fresh-meat">
+                                        <input type="checkbox" data-filter="category" class=" filter-checkbox" value="1">
+                                       <a href="{% url 'core:category-product-list' c.cid %}"> {{c.title}}</a> 
+                                        
+                                    </label>
+                                </li>
+                            {% endfor %}
+                              
+                            </ul>
+                        </div>
+                    
+                        <!-- Price, Vendors, Tags, and other sections remain the same -->
+                    
+                    </div>
+                    
+                    <div class="sidebar__item">
+                       
+                    </div>
+                    <div class="sidebar__item sidebar__item__vendor--option">
+                        <h4>Vendors</h4>
+                        {% for v in vendors %}
+                        <div class="sidebar__item__vendor sidebar__item__vendor--vendor1">
+                            <label for="vendor1">
+                                {{v.title}}
+                                <input type="checkbox" class="  filter-checkbox" data-filter="vendor" value="1" >
+                            </label>
+                        </div>
+                        {% endfor %}
+                       
+                    </div>
+                    
+                    <!-- <div class="sidebar__item">
+                        <h4>Tags</h4>
+                        <div class="sidebar__item__tag">
+                            <span>
+                                {% for tag in tags %}
+                                    <a href="{% url 'core:tags' tag.slug %}" rel="tags"> {{ tag.name }} </a>
+                                {% endfor %}
+                            </span>
+                        </div>
+                        
+    
+</div> -->
+
+                    
+    <div class="sidebar__item">
+                        
+    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-7">
+                <div class="product__discount">
+                    <div class="section-title text-center mb-4">
+                        <h2>Sale Off</h2>
+                    </div>
+                    <div class="row">
+                        <div class="product__discount__slider owl-carousel">
+                            {% for p in product %}
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card product__discount__item border-0">
+                                    <!-- Product Image -->
+                                    <div class="product__discount__item__pic card-img-top position-relative" style="background-image: url('{{ p.image.url }}'); height: 250px; background-size: cover; background-position: center;">
+                                        <!-- Discount Badge -->
+                                        <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
+                                            <span>-{{ p.get_percentage|floatformat:0 }}%</span>
+                                        </div>
+                                        <!-- Hover Icons -->
+                                        <ul class="product__item__pic__hover">
+                                            <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-heart"></i></a></li>
+                                            <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-retweet"></i></a></li>
+                                            <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <!-- Product Info -->
+                                    <div class="card-body p-3">
+                                        <p class="text-muted small">{{ p.Category }}</p>
+                                        <h5><a href="{% url 'core:product-cart' %}" class="text-dark">{{ p.title }}</a></h5>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Rating -->
+                                            <!-- <div class="product__details__rating me-2">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-half-o"></i>
+                                            </div>
+                                            <span>(18 reviews)</span> -->
+                                        </div>
+                                        <p class="small text-muted">{{ p.vendor }}</p>
+                                        <div class="product__item__price">
+                                            Ksh{{ p.price }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter__item">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5">
+                          
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="filter__found">
+                                <p>We found <strong class="text-brand " >{{product.count}}</strong> item{{product.count|pluralize}} for you..</p>
+                                </div>
+                        </div>
+                        <div class="col-lg-4 col-md-3">
+                            <div class="filter__option">
+                                <span class="icon_grid-2x2"></span>
+                                <span class="icon_ul"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for p in product %}
+<div class="col-lg-3">
+    <div class="product__discount__item">
+        <div class="product__discount__item__pic set-bg rounded-sm position-relative" data-setbg="{{ p.image.url }}">
+            <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
+                <span>-{{ p.get_percentage|floatformat:0 }}%</span>
+            </div>
+            <ul class="product__item__pic__hover">
+                <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-heart"></i></a></li>
+                <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-retweet"></i></a></li>
+                <li><a href="{% url 'core:pro-details' p.pid %}"><i class="fa fa-shopping-cart"></i></a></li>
+            </ul>
+        </div>
+        <div class="product__discount__item__text">
+            <div>
+                <span class="font-small text-muted">{{ p.Category }}</span>
+            </div>
+            <h5><a href="{% url 'core:product-cart' %}">{{ p.title }}</a></h5>
+            <div class="product__details__rating">
+                <!-- <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-half-o"></i>
+                <span>(18 reviews)</span> -->
+            </div>
+            <div>
+                <span class="font-small text-muted">{{ p.vendor }}</span>
+            </div>
+            <div class="product__item__price current-product-price-{{ p.id }}">Ksh{{ p.price }}</div>
+            <!-- Add to Cart Button -->
+            <!-- <button class="add-to-cart btn btn-primary" 
+                    data-product-id="{{ p.id }}" 
+                    data-title="{{ p.title }}" 
+                    data-price="{{ p.price }}" 
+                    data-category="{{ p.category }}" 
+                    data-image="{{ p.image.url }}">Add to Cart</button> -->
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Product Section End -->
+
+{% endblock %}

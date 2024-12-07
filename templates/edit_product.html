@@ -1,0 +1,16 @@
+
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} <title> Home</title> {% endblock %}
+{% block content %}
+<h1 style="text-align: center; " ><span class="text-success">Edit Product</span>: {{ product.title }}</h1>
+<a href="{% url 'core:product_list_ui' %}" class="btn btn-success">Back to Product List </a>
+<form method="post" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="color: white; background-color: green; border: none; border-radius: 50;margin: 13;">Save Changes</button>
+</form>
+
+
+{% endblock %}
