@@ -59,11 +59,11 @@
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__pic">
                     <div class="product__details__pic__item">
-                        <img class="product__details__pic__item--large" src="{{ product.image.url }}" alt="Product Image">
+                        <a href="{% url 'core:product-cart' %}"></a> <img class="product__details__pic__item--large" src="{{ product.image.url }}" alt="Product Image"></a>
                     </div>
                     <div class="product__details__pic__slider owl-carousel">
                         {% for p in product_images %}
-                            <img data-imgbigurl="{{ p.image.url }}" src="{{ p.image.url }}" alt="Product Image">
+                           <a href="{% url 'core:product-cart' %}"><img data-imgbigurl="{{ p.image.url }}" src="{{ p.image.url }}" alt="Product Image"></a> 
                         {% endfor %}
                     </div>
                 </div>
@@ -72,7 +72,7 @@
             <!-- Right Column with Product Details -->
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__text">
-                    <h3>{{ product.title }}</h3>
+                    <a href="{% url 'core:product-cart' %}"><h3>{{ product.title }}</h3></a>
                     <div class="product__details__rating">
                         <!-- <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -189,7 +189,7 @@
                                 </ul>
                             </div>
                             <div class="product__discount__item__text">
-                                <h5><a href="#">{{ p.title }}</a></h5>
+                                <h5><a href="{% url 'core:product-cart' %}">{{ p.title }}</a></h5>
                                 <div class="product-price">
                                     <div class="product__item__price"><span>Ksh</span>{{ p.price }}</div>
                                 </div>

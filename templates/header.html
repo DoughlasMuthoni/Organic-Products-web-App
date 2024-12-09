@@ -145,44 +145,40 @@
                         <li class="active"><a href="{% url 'core:home' %}">Home</a></li>
                         <li><a href="#">Category</a>
                             <ul class="header__menu__dropdown">
-                             {% for c in categories  %}   
-                                <li><a href="{% url 'core:category-product-list' c.cid %}"> {{c.title}}</a></li>
-                            {% endfor %} 
-                            <hr>
-                            <li><a href="{% url 'core:category-list'%}">All Category</a></li> 
+                                {% for c in categories %}
+                                    <li><a href="{% url 'core:category-product-list' c.cid %}"> {{c.title}}</a></li>
+                                {% endfor %}
+                                <hr>
+                                <li><a href="{% url 'core:category_list' %}">All Category</a></li>
                             </ul>
                         </li>
                         <li><a href="{% url 'core:product-list' %}">Shop</a></li>
-                       
-                    
-
-                     
+                
                         {% if user.is_authenticated %}
                             {% if user.is_staff %}
-                               
-                                <li><a href="{% url 'core:product_list_ui' %}">Product List</a></li>
+                                <!-- Admin Dropdown -->
+                                <li><a href="#">Admin</a>
+                                    <ul class="header__menu__dropdown">
+                                        <li><a href="{% url 'core:product_list_ui' %}">Product List</a></li>
+                                        <li><a href="{% url 'core:vendor-list' %}">Vendors</a></li>
+                                        <li><a href="{% url 'core:category-list' %}">Categories</a></li>
+                                    </ul>
+                                </li>
                             {% else %}
-                                
                                 <li><a href="{% url 'core:product-cart' %}">Make an Order</a></li>
                             {% endif %}
                         {% else %}
-                                
-                                <li><a href="{% url 'user_authens:sign-in' %}">Login</a></li>
+                            <li><a href="{% url 'user_authens:sign-in' %}">Login</a></li>
                         {% endif %}
-
-                    
-                        
-                       
-                            {% if request.user.is_authenticated %}
-                            <li><a href="{% url 'user_authens:sign-out'%}"> <i class="fas fa-sign-out"></i> Sign Out</a></li>
-                            {% else %}
-                            <li><a href="{% url 'user_authens:sign-in'%}"> <i class="fas fa-sign-in"></i> Sign in</a></li>
-                            {% endif %}
-                        
-                 
-            
+                            
+                        {% if request.user.is_authenticated %}
+                            <li><a href="{% url 'user_authens:sign-out' %}"><i class="fas fa-sign-out"></i> Sign Out</a></li>
+                        {% else %}
+                            <li><a href="{% url 'user_authens:sign-in' %}"><i class="fas fa-sign-in"></i> Sign In</a></li>
+                        {% endif %}
                     </ul>
                 </nav>
+                
             </div>
             
             <!-- <div class="col-lg-2">

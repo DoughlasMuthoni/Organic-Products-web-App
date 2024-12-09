@@ -9,6 +9,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.conf import settings
 from user_authens.models import User
+from django.contrib.auth.decorators import login_required
 
 # User = settings.AUTH_USER_MODEL 
 # Create your views here.
@@ -70,6 +71,7 @@ def logout_view(request):
          
 #  Adding the mpesa functions
 #Display the payment form
+# @login_required
 def pay(request):
    """ Renders the form to pay """
    return render(request, 'user_authens/pay.html')

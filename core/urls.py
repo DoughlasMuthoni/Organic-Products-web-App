@@ -1,6 +1,7 @@
 
 from django.urls import path
 from .import views
+from .views import AddVendorView, EditVendorView, DeleteVendorView, VendorListView
 
 app_name = 'core'
 
@@ -13,11 +14,21 @@ urlpatterns =[
     path('pro-details/<str:pid>/', views.pro_details, name='pro-details'),
 
     #categories
-    path('category/', views.category_list_views, name="category-list"),
+    path('category/', views.category_list_views, name="category_list"),
+    path('category/add/', views.add_category, name='add-category'),
+    path('categories/', views.category_list, name='category-list'),
+    path('category/edit/<str:cid>/', views.edit_category, name='edit-category'),
+    path('category/delete/<str:cid>/', views.delete_category, name='delete-category'),
     path('category/<cid>/', views.category_products_list_view, name="category-product-list"),
+
+    
     #vendors
     path('vendor/', views.vendors_list_view, name="vendor-list"),
     path('vendorDetails/<vid>/', views.vendors_details_view, name="vendor-details"),
+    path('vendors/', VendorListView.as_view(), name='vendor-list'),  # Display a list of vendors
+    path('vendor/add/', AddVendorView.as_view(), name='add-vendor'),  # Add a new vendor
+    path('vendor/edit/<int:pk>/', EditVendorView.as_view(), name='edit-vendor'),  # Edit vendor
+    path('vendor/delete/<int:pk>/', DeleteVendorView.as_view(), name='delete-vendor'),  # Delete vendor
     #tags
     path('products/tag/<slug:tag_slug>/', views.tag_list, name="tags"),
     
@@ -30,7 +41,6 @@ urlpatterns =[
     path('product_purchase/', views.product_purchase, name='product_purchase'),
     path('edit-product/<int:product_id>/', views.edit_product, name='edit-product'),
     path('delete-product/<int:product_id>/', views.delete_product, name='delete-product'),
-    
-    
-    
+   
+ 
 ]

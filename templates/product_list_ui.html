@@ -1,16 +1,19 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block title %} <title>Product List</title> {% endblock %}
+
+{% block title %} 
+    <title>Product List</title> 
+{% endblock %}
+
 {% block content %}
 <!-- Product List Page -->
-
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Product List</h1>
+    <h4 class="text-center mb-4">Product List</h4>
 
     <!-- Product Table -->
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Product Table</h5>
+            <h3 class="mb-0">Product Table</h3>
         </div>
         <div class="card-body">
             <div class="mb-3 text-end">
@@ -26,6 +29,7 @@
                         <th>Price (Ksh)</th>
                         <th>Stock Count</th>
                         <th>Status</th>
+                        <th>Featured</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -36,11 +40,16 @@
                         <td>{{ product.category }}</td>
                         <td>Ksh {{ product.price }}</td>
                         <td>{{ product.stock_count }}</td>
-                        <td>{{ product.get_product_status_display }}</td>
+                        <td>{{ product.get_product_status_display }}</td>  <!-- Show status as a label -->
+                        <td>{% if product.featured %}Yes{% else %}No{% endif %}</td>  <!-- Show "Yes" or "No" for featured -->
                         <td>
                             <a href="{% url 'core:edit-product' product.id %}" class="btn btn-success btn-sm">Edit</a> |
                             <a href="{% url 'core:delete-product' product.id %}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No products available.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

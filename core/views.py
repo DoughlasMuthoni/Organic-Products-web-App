@@ -1,13 +1,17 @@
 
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from core.models import Product, Category, Vendors,ProductImages, Address 
+from django.views import View
+from core.models import CartItem_purchase, Product, Category, Vendors,ProductImages, Address 
 from django.db.models import Count, Avg
 from taggit.models import Tag
-from core.forms import ProductForm, ProductImageForm
+from core.forms import CategoryForm, ProductForm, ProductImageForm, VendorForm
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.views.generic import ListView
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 def indexPage(request):
     # Retrieve all products
@@ -30,9 +34,9 @@ def category_list_views(request):
     return render(request, 'category-list.html', context)
 
 def category_products_list_view(request, cid):
-    category = Category.objects.get(cid=cid)
-    products = Product.objects.filter(product_status ="published", category =category)
-    context ={
+    category = get_object_or_404(Category, cid=cid)  # Fetch category by cid
+    products = Product.objects.filter(product_status="published", category=category)
+    context = {
         "category": category,
         "products": products
     }
@@ -236,6 +240,7 @@ def product_purchase(request):
     # Retrieve all products
     products = Product.objects.all()
     return render(request, 'product_purchase.html', {'products': products})
+# @login_required
 def product_cart_views(request):
     # Get all products or filter by query if provided
     query = request.GET.get("q", "")
@@ -329,3 +334,86 @@ def pro_details(request, pid):
     }
 
     return render(request, 'product-details.html', context)
+
+
+class VendorListView(ListView):
+    model = Vendors
+    template_name = 'vendor_list.html'
+    context_object_name = 'vendors'
+
+class AddVendorView(View):
+    def get(self, request):
+        form = VendorForm()
+        return render(request, 'vendor_add.html', {'form': form})
+
+    def post(self, request):
+        form = VendorForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('core:vendor-list')  # Redirect to the vendor list view
+        return render(request, 'vendor_add.html', {'form': form})
+
+# View to edit an existing vendor
+class EditVendorView(View):
+    def get(self, request, pk):
+        vendor = get_object_or_404(Vendors, pk=pk)
+        form = VendorForm(instance=vendor)
+        return render(request, 'vendor_edit.html', {'form': form, 'vendor': vendor})
+
+    def post(self, request, pk):
+        vendor = get_object_or_404(Vendors, pk=pk)
+        form = VendorForm(request.POST, request.FILES, instance=vendor)
+        if form.is_valid():
+            form.save()
+            return redirect('core:vendor-list')  # Redirect to the vendor list view
+        return render(request, 'vendor_edit.html', {'form': form, 'vendor': vendor})
+
+# View to delete a vendor
+class DeleteVendorView(View):
+    def get(self, request, pk):
+        vendor = get_object_or_404(Vendors, pk=pk)
+        vendor.delete()
+        return redirect('core:vendor-list')  # Redirect to the vendor list view
+    
+
+# categories formatting
+
+
+@staff_member_required
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'category_admin.html', {'categories': categories})
+
+@staff_member_required
+def add_category(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('core:category-list')
+    else:
+        form = CategoryForm()
+    return render(request, 'add_category.html', {'form': form})
+
+@staff_member_required
+def edit_category(request, cid):
+    category = get_object_or_404(Category, cid=cid)
+    if request.method == "POST":
+        form = CategoryForm(request.POST, request.FILES, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('core:category-list')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'edit_category.html', {'form': form, 'category': category})
+
+@staff_member_required
+def delete_category(request, cid):
+    category = get_object_or_404(Category, cid=cid)
+    if request.method == "POST":
+        category.delete()
+        return redirect('core:category-list')
+    return render(request, 'delete_category.html', {'category': category})
+
+
+

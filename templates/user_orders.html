@@ -1,0 +1,23 @@
+<!-- user_orders.html -->
+{% extends 'partials/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Your Orders</h1>
+
+    {% if orders %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    <strong>Order #{{ order.id }}</strong><br>
+                    Total Amount: Ksh {{ order.total_amount|floatformat:2 }}<br>
+                    Status: {{ order.status }}<br>
+                    Date: {{ order.created_at }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
