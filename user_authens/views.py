@@ -114,4 +114,7 @@ def stk(request):
         }
         response = requests.post(api_url, json=request, headers=headers)
         return HttpResponse("Successfully done!!")
+    
+
+
       

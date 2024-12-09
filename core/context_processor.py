@@ -1,7 +1,7 @@
 
 
 
-from core.models import Product, Category, Vendors, ProductReview, ProductImages, Address
+from core.models import Product, Category, Vendors, ProductImages, Address
 
 def default(request):
     categories = Category.objects.all()

@@ -25,6 +25,7 @@ urlpatterns = [
     path('user/', include('user_authens.urls')),
     path('ckeditor/', include("ckeditor_uploader.urls")),
     
+    
 ]
 
 

@@ -156,14 +156,7 @@
                        
                     
 
-                        <!-- <li><a href="#">Vendor</a>
-                            <ul class="header__menu__dropdown">
-                                <li><a href="./shop-details.html">Shop Details</a></li>
-                                <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                                <li><a href="./checkout.html">Check Out</a></li>
-                                <li><a href="./blog-details.html">Blog Details</a></li>
-                            </ul>
-                        </li> -->
+                     
                         {% if user.is_authenticated %}
                             {% if user.is_staff %}
                                
@@ -178,13 +171,8 @@
                         {% endif %}
 
                     
-                        </li>
-                        <!-- <li><a href="#"><i class="fas fa-user-circle "></i> Accounts</a>
-                        <ul class="header__menu__dropdown"> -->
-                            <!-- <li><a href="./shop-details.html"><i class="fas fa-user"></i> My Accounts</a></li>
-                            <li><a href="./shoping-cart.html"> <i class="fas fa-truck"></i> Order Tracking</a></li>
-                            <li><a href="./checkout.html"><i class="fas fa-cogs"></i> Settings</a></li>
-                            <li><a href="./blog-details.html"> <i class="fas fa-list"></i> Switchlist</a></li> -->
+                        
+                       
                             {% if request.user.is_authenticated %}
                             <li><a href="{% url 'user_authens:sign-out'%}"> <i class="fas fa-sign-out"></i> Sign Out</a></li>
                             {% else %}

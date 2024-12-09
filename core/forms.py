@@ -1,19 +1,8 @@
 
 from django import forms
-from core.models import ProductReview
 from .models import Product, ProductImages
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from taggit.forms import TagWidget
-
-
-
-class ProductReviewForm(forms.ModelForm):
-
-    review = forms.CharField(widget=forms.Textarea(attrs={'placeholder':"write a review"}))
-    
-    class Meta:
-        model = ProductReview
-        fields =['review', 'rating']
 
 
 

@@ -1,10 +1,10 @@
 
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from core.models import Product, Category, Vendors, ProductReview, ProductImages, Address 
+from core.models import Product, Category, Vendors,ProductImages, Address 
 from django.db.models import Count, Avg
 from taggit.models import Tag
-from core.forms import ProductReviewForm, ProductForm, ProductImageForm
+from core.forms import ProductForm, ProductImageForm
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -98,55 +98,6 @@ def tag_list(request, tag_slug=None):
     return render(request, "tag.html", context)
 
 
-
-def ajax_add_review(request, pid):
-    try:
-        product = Product.objects.get(pid=pid)
-    except Product.DoesNotExist:
-        return JsonResponse({'bool': False, 'message': 'Product not found'})
-
-    if not request.user.is_authenticated:
-        return JsonResponse({'bool': False, 'message': 'User must be logged in'})
-
-    review_text = request.POST.get('review')
-    rating = request.POST.get('rating')
-
-    if not review_text or not rating:
-        return JsonResponse({'bool': False, 'message': 'Review text and rating are required'})
-
-    try:
-        rating = int(rating)
-        if rating < 1 or rating > 5:
-            raise ValueError("Rating must be between 1 and 5")
-    except (ValueError, TypeError):
-        return JsonResponse({'bool': False, 'message': 'Invalid rating value'})
-
-    # Check if the user has already reviewed this product
-    if ProductReview.objects.filter(user=request.user, product=product).exists():
-        return JsonResponse({'bool': False, 'message': 'You have already reviewed this product'})
-
-    review = ProductReview.objects.create(
-        user=request.user,
-        product=product,
-        review=review_text,
-        rating=rating,
-    )
-
-    context = {
-        'user': request.user.username,
-        'review': review_text,
-        'rating': rating,
-    }
-
-    average_reviews = ProductReview.objects.filter(product=product).aggregate(Avg("rating"))
-    average_rating = average_reviews.get('rating__avg', 0)
-
-    return JsonResponse({
-        'bool': True,
-        'context': context,
-        'average_reviews': average_rating
-    })
-
 #searching products
 
 def search_view(request):
@@ -184,78 +135,7 @@ def filter_product(request):
     return JsonResponse({"data": data})
 
 
-
-# def add_to_cart(request):
-#     cart_product = {}
-
-#     # Add product to cart using the GET parameters
-#     cart_product[str(request.GET['id'])] = {
-#         'title': request.GET.get('title', ''),
-#         'qty': request.GET.get('qty', 1),  # Default quantity to 1 if not provided
-#         'price': request.GET.get('price', 0),  # Default to 0 if no price
-#         'image': request.GET.get('image', ''),
-#         'pid': request.GET.get('pid', ''),
-#     }
-
-#     # If cart data exists in the session, update the cart
-#     if 'cart_data_obj' in request.session:
-#         cart_data = request.session['cart_data_obj']
-
-#         # Check if product already exists in the cart
-#         if str(request.GET['id']) in cart_data:
-#             # Update the quantity of the existing product
-#             cart_data[str(request.GET['id'])]['qty'] = int(cart_product[str(request.GET['id'])]['qty'])
-#         else:
-#             cart_data.update(cart_product)
-        
-#         # Save the updated cart data back to the session
-#         request.session['cart_data_obj'] = cart_data
-
-#     else:
-#         # If cart doesn't exist in the session, create a new one
-#         request.session['cart_data_obj'] = cart_product
-
-#     return JsonResponse({
-#         'data': request.session['cart_data_obj'],
-#         'totalcartitems': len(request.session['cart_data_obj']),
-#     })
-
-       
-
-# def update_cart(request):
-    
-#     product_id = request.GET.get('id')
-#     quantity = request.GET.get('qty')
-
-#     if not product_id or not quantity:
-#         return JsonResponse({'error': 'Product ID and quantity are required'}, status=400)
-
-#     try:
-        
-#         quantity = int(quantity)
-#         if quantity <= 0:
-#             return JsonResponse({'error': 'Quantity must be greater than 0'}, status=400)
-
-        
-#         cart = request.session.get('cart', {})
-
-        
-#         if product_id in cart:
-#             cart[product_id]['qty'] = quantity
-#         else:
-#             return JsonResponse({'error': 'Product not found in cart'}, status=404)
-
-        
-#         request.session['cart'] = cart
-    
-        
-#         return JsonResponse({'message': 'Cart updated successfully', 'cart': cart})
-
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
-
-
-# def cart_view(request):
+def cart_view(request):
     cart_total_amount = 0
 
     # Debugging: Print the session data to the console

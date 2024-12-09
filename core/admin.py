@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from core.models import Product, Category, Vendors, ProductReview,ProductImages,Address 
+from core.models import Product, Category, Vendors,ProductImages,Address 
 
 
 
@@ -19,8 +19,6 @@ class  VendorsAdmin(admin.ModelAdmin):
     list_display = [ 'title', 'vendor_image']
 
 
-class  ProductReviewAdmin(admin.ModelAdmin):
-    list_display = [ 'user', 'product', 'rating']
 
 
 class  AddressAdmin(admin.ModelAdmin):
@@ -30,5 +28,4 @@ class  AddressAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Vendors, VendorsAdmin)
-admin.site.register(ProductReview, ProductReviewAdmin)
 admin.site.register(Address, AddressAdmin)
