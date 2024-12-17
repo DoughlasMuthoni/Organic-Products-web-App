@@ -1,0 +1,89 @@
+
+
+
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %} Customer Dashboard {% endblock %}
+
+
+{% block content %}
+<body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <div class="sidebar p-3">
+        <h4 class="text-center mb-4">Dashboard</h4>
+        <nav class="nav flex-column">
+          <a class="nav-link active" href="#" onclick="showSection('dashboard')">Dashboard</a>
+          <a class="nav-link" href="#" onclick="showSection('orders')">Orders</a>
+          <a class="nav-link" href="#">Track Your Order</a>
+          <a class="nav-link" href="#">My Address</a>
+          <a class="nav-link" href="#">Account Details</a>
+          <a class="nav-link" href="#">Logout</a>
+        </nav>
+      </div>
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+          <h2 class="mb-4">Hello Rosie!</h2>
+          <p>
+            From your account dashboard, you can easily check & view your
+            <a href="#" class="text-success">recent orders</a>, manage your shipping and billing addresses, and 
+            <a href="#" class="text-success">edit your password and account details</a>.
+          </p>
+        </div>
+  
+        <!-- Orders Section -->
+        <div id="orders-section" class="table-container">
+          <h2 class="mb-4">Your Orders</h2>
+          <table class="table table-striped table-bordered">
+            <thead class="table-success">
+              <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for o in orders %}
+            <tr>
+            <td>#1234</td>
+            <td>2024-06-15</td>
+            <td>Processing</td>
+            <td>$120.00</td>
+            <td><a href="#" class="btn btn-sm btn-success">View</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+    <!-- JavaScript for Content Toggle -->
+    <script>
+      function showSection(section) {
+        // Hide all sections
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('orders-section').style.display = 'none';
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+  
+        // Show selected section
+        if (section === 'dashboard') {
+          document.getElementById('dashboard-section').style.display = 'block';
+          document.querySelector('a[href="#"][onclick="showSection(\'dashboard\')"]').classList.add('active');
+        } else if (section === 'orders') {
+          document.getElementById('orders-section').style.display = 'block';
+          document.querySelector('a[href="#"][onclick="showSection(\'orders\')"]').classList.add('active');
+        }
+      }
+  
+      // Show dashboard by default
+      showSection('dashboard');
+    </script>
+  
+
+  </body>
+{% endblock %}

@@ -1,29 +1,24 @@
 
 
 
+from django.shortcuts import get_object_or_404
 from core.models import Product, Category, Vendors, ProductImages, Address
 
 def default(request):
     categories = Category.objects.all()
-    vendors = Vendors.objects.all()
 
-    # Check if the user is authenticated
+    # Check if the user is authenticated before querying for the address
     if request.user.is_authenticated:
-        try:
-            # If the user is authenticated, get their address
-            address = Address.objects.filter(user=request.user).first()
-        except Address.DoesNotExist:
-            # Handle the case where the user has no address
-            address = None  # or you could set a default address here
+        address = Address.objects.filter(user=request.user).first()  # Returns None if not found
     else:
-        # If the user is not authenticated, set address to None
-        address = None
+        address = None  # No address for unauthenticated users
 
     return {
         'categories': categories,
         'address': address,
-        'vendors': vendors,
+        
     }
+
 
 
 

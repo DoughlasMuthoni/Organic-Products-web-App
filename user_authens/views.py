@@ -64,9 +64,11 @@ def login_view(request):
 
 #logging out
 def logout_view(request):
-    logout(request) 
+    logout(request)
     messages.success(request, "You logged out!!!")
-    return redirect("user_authens:sign-in")         
+    next_page = request.GET.get('next', 'user_authens:sign-in')
+    return redirect(next_page)
+        
       
          
 #  Adding the mpesa functions

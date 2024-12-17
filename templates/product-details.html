@@ -4,52 +4,6 @@
 {% block title %} <title>Product Details</title> {% endblock %}
 
 {% block content %}
-<!-- Hero Section Begin -->
-<section class="hero">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="hero__categories">
-                    <div class="hero__categories__all">
-                        <i class="fa fa-bars"></i>
-                        <span>{{ categories.count }} All Categories</span>
-                    </div>
-                    <ul>
-                        {% for c in categories %}
-                        <li><a href="{% url 'core:category-product-list' c.cid %}">{{ c.title }} ({{ c.category.all.count }})</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
-            <div class="col-lg-9">
-                <div class="hero__search">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <div class="hero__search__categories">
-                                All Categories
-                                <span class="arrow_carrot-down"></span>
-                                <ul></ul>
-                            </div>
-                            <input type="text" placeholder="What do you need?">
-                            <button type="submit" class="site-btn">SEARCH</button>
-                        </form>
-                    </div>
-                    <div class="hero__search__phone">
-                        <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
-                        </div>
-                        <div class="hero__search__phone__text">
-                            <h5>+254 707 264 913</h5>
-                            <span>support 24/7</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Hero Section End -->
 
 <!-- Product Details Section Begin -->
 <section class="pro-details spad">
@@ -59,11 +13,11 @@
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__pic">
                     <div class="product__details__pic__item">
-                        <a href="{% url 'core:product-cart' %}"></a> <img class="product__details__pic__item--large" src="{{ product.image.url }}" alt="Product Image"></a>
+                        <a href="{% url 'core:product-cart' %}"></a> <img class="product__details__pic__item--large" src="{{ p.image.url }}" alt="Product Image"></a>
                     </div>
                     <div class="product__details__pic__slider owl-carousel">
                         {% for p in product_images %}
-                           <a href="{% url 'core:product-cart' %}"><img data-imgbigurl="{{ p.image.url }}" src="{{ p.image.url }}" alt="Product Image"></a> 
+                           <a href=""><img data-imgbigurl="{{ p.image.url }}" src="{{ p.image.url }}" alt="Product Image"></a> 
                         {% endfor %}
                     </div>
                 </div>
@@ -72,7 +26,7 @@
             <!-- Right Column with Product Details -->
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__text">
-                    <a href="{% url 'core:product-cart' %}"><h3>{{ product.title }}</h3></a>
+                    <a href="{% url 'core:product-cart' %}"><h3>{{ p.title }}</h3></a>
                     <div class="product__details__rating">
                         <!-- <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -82,15 +36,40 @@
                         <span>(18 reviews)</span> -->
                     </div>
                     <div class="product-price">
-                        <div class="product__item__price"><span>Ksh</span>{{ product.price }}</div>
+                        <del>Ksh {{ p.old_price }}</del>
+                        <div class="product-price">
+                            <span class="product__item__price ">Ksh</span><span class="current-product-price-{{p.id}}">{{ p.price }}</span>
+                        </div>
                     </div>
                     <p>{{ product.description|safe }}</p>
+                    <!-- <input type="hidden" value="{{ product.id }}" class="product-id" id="">
+                    <input type="hidden" value="{{ product.title }}" class="product-title" id=""> -->
+                    
+                                            
+                        <!-- <input type="hidden" value="1" id="product-quantity" class=" product-quantity-{{p.id}}"> -->
+                        <input type="hidden" class="product-pid-{{p.id}}" value="{{p.pid}}">
+                        <input type="hidden" class="product-image-{{p.id}}" value="{{ p.image.url  }}">
+                        <input type="hidden" class="product-id-{{p.id}}" value="{{p.id}}">
+                        <input type="hidden" class="product-title-{{p.id}}" value="{{p.title}}">
+                        <!-- <li><button class="btn add-to-cart-btn " data-index="{{p.id}}" id="add-to-cart-btn"><i class="fa fa-shopping-cart"></i></button></li> -->
+
+                    <div>
+                        <input type="number" value="1" name="" id="product-quantity" class="mb-3 product-quantity-{{p.id}}" style="width: 50px;">
+
+                    </div>
+                    <div>
+                        
+                        <button type="submit" class="btn btn-success add-to-cart-btn" data-index="{{p.id}}" id="add-to-cart-btn"> <i class="fa fa-shopping-cart"></i> Add to cart</button>
+                        <button id="wishlist-button" class="btn btn-success ">
+                            <i class="fas fa-heart"></i>  Wish List
+                          </button>
+                    </div>
                     <div class="product__details__quantity">
                         <ul>
-                            <li><b>Product Type:</b> <span>{{ product.type }}</span></li>
-                            <li><b>D.O.M:</b> <span>{{ product.mfd|date:"d M, Y" }}</span></li>
-                            <li><b>Life:</b> <span>{{ product.life }}</span></li>
-                            <h4>Tags</h4>
+                            <li><b>Product Type:</b> <span>{{ p.type }}</span></li>
+                            <li><b>D.O.M:</b> <span>{{ p.mfd|date:"d M, Y" }}</span></li>
+                            <li><b>Life:</b> <span>{{ p.life }}</span></li>
+                            <li><b>Tags:</b></li>
 <div class="sidebar__item__tag">
     <span>
         {% for tag in product.tags.all %}
@@ -101,7 +80,7 @@
     </span>
 </div>
 
-                            <li><b>Stock:</b> <span>{{ product.stock_count }}</span></li>
+                            <li><b>Stock:</b> <span>{{ p.stock_count }}</span></li>
                         </ul>
                     </div>
                 </div>
@@ -113,21 +92,26 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Delivery</h5>
+                <h5 class="card-title">Delivery</h5> 
                 <span>
-                    Address: {{ address.address }} 
-                    <br>
-                    {% if address.status %}
-                        <span class="text-success">Verified Address</span>
-                    {% else %}
-                        <span class="text-danger">Unverified Address</span>
-                    {% endif %}
-                </span>
+                    {% if address %}
+    Address: {{ address.address|default:"No address provided" }} 
+    <br>
+        {% if address.status == True %}
+            <span class="text-success">Verified Address</span>
+        {% else %}
+            <span class="text-danger">Unverified Address</span>
+        {% endif %}
+    {% else %}
+        <p>No address found. Please add an address.</p>
+    {% endif %}
+
+                </span> 
                 <hr>
                 <h5 class="card-title">Return & Warranty</h5>
-                <p class="card-text">{{ product.vendor.authentic_rating }}% Authentic</p>
-                <p class="card-text">{{ product.vendor.days_return }} days Return</p>
-                <p class="card-text">{{ product.vendor.warranty_period }} months Warranty</p>
+                <p class="card-text">{{ p.vendor.authentic_rating }}% Authentic</p>
+                <p class="card-text">{{ p.vendor.days_return }} days Return</p>
+                <p class="card-text">{{ p.vendor.warranty_period }} months Warranty</p>
             </div>
         </div>
     </div>
@@ -137,10 +121,10 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Vendor</h5>
-                <p class="card-text">Name: {{ product.vendor.title }}</p> <!-- Assuming vendor has a 'name' field -->
-                <p class="card-text">Rating: {{ product.vendor.rating }}</p>  <!-- Assuming vendor has a 'rating' field -->
-                <p class="card-text">Address: {{ product.vendor.address }}</p>
-                <p class="card-text">Contact: {{ product.vendor.contact }}</p>
+                <p class="card-text">Name: {{ p.vendor.title }}</p> <!-- Assuming vendor has a 'name' field -->
+                <!-- <p class="card-text">Rating: {{ product.vendor.rating }}</p>   -->
+                <p class="card-text">Address: {{ p.vendor.address }}</p>
+                <p class="card-text">Contact: {{ p.vendor.contact }}</p>
                 <hr>
                 <div class="row rating-counters">
                     <div class="counter col-4">
@@ -149,13 +133,114 @@
                     </div>
                     <div class="counter col-4">
                         <h5>Ship on Time</h5>
-                        <p>{{ product.vendor.shipping_on_time }}%</p>
+                        <p>{{ p.vendor.shipping_on_time }}%</p>
                     </div>
                     <div class="counter col-4">
                         <h5>Chat Response</h5>
-                        <p>{{ product.vendor.chat_resp_time }}%</p>
+                        <p>{{ p.vendor.chat_resp_time }}%</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="product__details__tab">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"
+                        aria-selected="true">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab"
+                        aria-selected="false">Information<span></span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab"
+                        aria-selected="false">Reviews <span>({{reviews.count}})</span></a>
+                        <p></p>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                    <div class="product__details__tab__desc">
+                        <h6>Products Infomation</h6>
+                        <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
+                            Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vivamus
+                            suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam sit amet quam
+                        
+                           
+                    </div>
+                </div>
+                <div class="tab-pane" id="tabs-2" role="tabpanel">
+                    <div class="product__details__tab__desc">
+                        <h6>Products Infomation</h6>
+                        <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
+                            Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus.
+                            Vivamus suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam
+                          </p>
+                       
+                    </div>
+                </div>
+                <div class="tab-pane comment-list" id="tabs-3" role="tabpanel">
+                    {% for r in reviews %}
+                    <div class="single-comment justify-content-between d-flex flex-column flex-sm-row mb-4 align-items-center">
+                        <div class="thumb text-center mr-3 mb-3 mb-sm-0">
+                            <img src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg" alt="User Image" class="rounded-circle" width="50" height="50">
+                            <a href="#" class="font-heading text-brand mt-2 d-block">{{ r.user.username|title }}</a>
+                        </div>
+                        <div class="desc flex-grow-1">
+                            
+                            <div class="d-flex justify-content-between mb-2 align-items-center">
+                                
+                                <div class="d-flex align-items-center mr-3">
+                                    <span class="text-muted">{{ r.date }}</span>
+                                </div>
+                    
+                                
+                            </div>
+                    
+                           
+                            <p class="mb-2">
+                                <a href="#" class="reply text-decoration-none text-primary">Reply</a>
+                            </p>
+                            <p class="mb-0">{{ r.review }}</p>
+                            <div class="product-rate d-inline-block">
+                            {% for s in r.rating|ljust:r.rating %}
+                                
+                            <i class ="fas fa-star text-warning"></i>
+
+                            {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="product__details__tab__desc">
+                        <h6>Reviews</h6>
+                        <strong class="text-success" id="review-resp"></strong>
+                        {% if make_review == True %}
+                        {% if request.user.is_authenticated %}
+                            <form class="form-contact comment_form hide-comment-form"  id="commentForm" method="post" action="{% url 'core:ajax-add-review' p.pid %}">
+                                {% csrf_token %} 
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            {{ review_form.review }}
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            {{ review_form.rating }}
+                                        </div>
+                                    </div>
+                                    <div><button type="submit" class=" btn btn-success mt-2 button-contactForm">submit</button></div>
+                                </div>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                
             </div>
         </div>
     </div>
@@ -204,6 +289,6 @@
 
     </div>
 </section>
-<!-- Product Details Section End -->
+
 
 {% endblock %}

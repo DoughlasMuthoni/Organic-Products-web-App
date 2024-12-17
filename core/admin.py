@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from core.forms import ProductForm, VendorForm
-from core.models import  Product, Category, Vendors,ProductImages,Address 
+from core.models import  Product, Category, Vendors,ProductImages,CartOrder, CartOrderItems, Wishlist,ProductReview,Address 
 
 
 
@@ -24,7 +24,9 @@ class ProductAdmin(admin.ModelAdmin):
         'featured', 
         'product_status',  # Dropdown field for product status
         'pid', 
-        'date',  # Optionally display the creation date
+        'date', 
+        'digital',
+        'sku',
         'updated',  # Optionally display the last update date
     ]
 
@@ -52,7 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
     # Optionally, limit what fields are displayed in the edit form in the admin
     fieldsets = (
         (None, {
-            'fields': ('title', 'user', 'category', 'vendor', 'description', 'price', 'tags', 'image', 'stock_count', 'life', 'type', 'featured', 'product_status', 'status', 'in_stock')
+            'fields': ('title', 'user', 'category', 'vendor', 'description', 'price','old_price', 'tags', 'image', 'stock_count', 'life', 'type', 'featured', 'product_status', 'status', 'in_stock', 'mfd', 'digital')
         }),
     )
 class  CategoryAdmin(admin.ModelAdmin):
@@ -67,7 +69,17 @@ class VendorAdmin(admin.ModelAdmin):
     # Optional: You can add filtering options here (e.g., date, shipping_on_time)
     ordering = ['-date']
 
+class CartOrderAdmin(admin.ModelAdmin):
+    list_display =[ 'user', 'price', 'paid_status', 'order_date']
 
+class CartOrderItemAdmin(admin.ModelAdmin):
+    list_display =[ 'order', 'invoice_no', 'item', 'image', 'qty', 'price', 'total', 'product_status']
+
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display =[ 'user', 'product', 'review', 'rating']
+
+class  WishlistAdmin(admin.ModelAdmin):
+    list_display =[ 'user', 'product', 'date']
 
 
 class  AddressAdmin(admin.ModelAdmin):
@@ -77,4 +89,8 @@ class  AddressAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Vendors, VendorAdmin)
+admin.site.register(CartOrderItems, CartOrderItemAdmin)
+admin.site.register(CartOrder, CartOrderAdmin)
+admin.site.register(ProductReview, ProductReviewAdmin)
+admin.site.register(Wishlist, WishlistAdmin)
 admin.site.register(Address, AddressAdmin)

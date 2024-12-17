@@ -23,7 +23,7 @@
                 <td>{{ category.title }}</td>
                 <td><img src="{{ category.image.url }}" width="50" height="50" /></td>
                 <td>
-                    <a href="{% url 'core:edit-category' category.cid %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'core:edit-category' category.cid %}" class="btn btn-success btn-sm">Edit</a>
                     <a href="{% url 'core:delete-category' category.cid %}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>

@@ -1,6 +1,6 @@
 
 from django import forms
-from .models import Category, Product, ProductImages, Vendors
+from .models import Category, Product, ProductImages, Vendors,ProductReview
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from taggit.forms import TagWidget
 
@@ -50,3 +50,9 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['title', 'image']
+
+class ProductReviewForm(forms.ModelForm):
+    review = forms.CharField(widget=forms.Textarea(attrs={'placeholder':'Write a review'}))
+    class Meta:
+        model = ProductReview
+        fields = ['review', 'rating']

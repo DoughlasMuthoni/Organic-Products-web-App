@@ -2,16 +2,23 @@
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from core.models import CartItem_purchase, Product, Category, Vendors,ProductImages, Address 
+from core.models import CartItem_purchase, CartOrder, Product, Category, ProductReview, Vendors,ProductImages, Address 
 from django.db.models import Count, Avg
 from taggit.models import Tag
-from core.forms import CategoryForm, ProductForm, ProductImageForm, VendorForm
+from core.forms import CategoryForm, ProductForm, ProductImageForm, ProductReviewForm, VendorForm
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.views.generic import ListView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import PageNotAnInteger, EmptyPage
+
+
+
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 
 def indexPage(request):
     # Retrieve all products
@@ -139,48 +146,48 @@ def filter_product(request):
     return JsonResponse({"data": data})
 
 
-def cart_view(request):
-    cart_total_amount = 0
+# def cart_view(request):
+#     cart_total_amount = 0
 
-    # Debugging: Print the session data to the console
-    print("Cart Data in Session:", request.session.get('cart_data_obj', 'No cart data'))
+#     # Debugging: Print the session data to the console
+#     print("Cart Data in Session:", request.session.get('cart_data_obj', 'No cart data'))
 
-    if 'cart_data_obj' in request.session:
-        # Iterate over each item in the cart session
-        for p_id, item in request.session['cart_data_obj'].items():
-            try:
-                # Ensure price is a float and clean it
-                price = float(item['price'])
+#     if 'cart_data_obj' in request.session:
+#         # Iterate over each item in the cart session
+#         for p_id, item in request.session['cart_data_obj'].items():
+#             try:
+#                 # Ensure price is a float and clean it
+#                 price = float(item['price'])
 
-                # Ensure quantity is an integer
-                qty = int(item['qty']) if item['qty'].isdigit() else 1
+#                 # Ensure quantity is an integer
+#                 qty = int(item['qty']) if item['qty'].isdigit() else 1
 
-            except ValueError:
-                # If there's a value error (invalid price or qty), set default values
-                price = 0.0
-                qty = 1
-                messages.error(request, f"Invalid data for item {item.get('title', 'Unknown')}. Defaulting to price: 0 and quantity: 1.")
+#             except ValueError:
+#                 # If there's a value error (invalid price or qty), set default values
+#                 price = 0.0
+#                 qty = 1
+#                 messages.error(request, f"Invalid data for item {item.get('title', 'Unknown')}. Defaulting to price: 0 and quantity: 1.")
             
-            # Calculate the total price for this item (price * qty)
-            total_price = round(price * qty, 2)  # Round to 2 decimal places for clarity
+#             # Calculate the total price for this item (price * qty)
+#             total_price = round(price * qty, 2)  # Round to 2 decimal places for clarity
             
-            # Add the item total price to the session data
-            item['total_price'] = total_price
+#             # Add the item total price to the session data
+#             item['total_price'] = total_price
 
-            # Add the total item price to the overall cart total
-            cart_total_amount += total_price
+#             # Add the total item price to the overall cart total
+#             cart_total_amount += total_price
 
-        # Render the cart view with updated data
-        return render(request, 'cart.html', {
-            'cart_data': request.session['cart_data_obj'],
-            'totalcartitems': len(request.session['cart_data_obj']),
-            'cart_total_amount': round(cart_total_amount, 2),  # Round to 2 decimal places
-        })
+#         # Render the cart view with updated data
+#         return render(request, 'cart.html', {
+#             'cart_data': request.session['cart_data_obj'],
+#             'totalcartitems': len(request.session['cart_data_obj']),
+#             'cart_total_amount': round(cart_total_amount, 2),  # Round to 2 decimal places
+#         })
     
-    else:
-        # If the cart is empty, show a warning message
-        messages.warning(request, "Your cart is empty")
-        return render(request, 'cart.html')
+#     else:
+#         # If the cart is empty, show a warning message
+#         messages.warning(request, "Your cart is empty")
+#         return render(request, 'cart.html')
 
 
 def add_product(request):
@@ -305,6 +312,34 @@ def checkout_view(request):
 
         # If there are selected products, render the checkout page with the order summary
         if selected_products:
+            # Get user email (assuming user is logged in)
+            user_email = request.user.email if request.user.is_authenticated else request.POST.get('email')
+
+            # Prepare email subject and body
+            subject = f'Order Confirmation - Order #{request.session.session_key}'
+            message = f"""
+            Hello {request.user.first_name or 'Valued Customer'},
+
+            Thank you for your order! Here are the details of your purchase:
+
+            Order Number: {request.session.session_key}
+            Total Amount: Ksh {total_amount}
+
+            Ordered Items:
+            """
+
+            for item in selected_products:
+                message += f"\n- {item['product'].title} x {item['quantity']} (Ksh {item['total']})"
+
+            # Send the confirmation email
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [user_email],
+            )
+
+            # After sending email, render the checkout page
             return render(request, 'checkout.html', {
                 'selected_products': selected_products,
                 'total_amount': total_amount
@@ -323,18 +358,277 @@ def checkout_view(request):
 def pro_details(request, pid):
     # Retrieve the product by its unique 'pid'
     product = get_object_or_404(Product, pid=pid)
+
     products = Product.objects.filter(category=product.category).exclude(pid=pid)
+    average_rating = ProductReview.objects.filter(product=product).aggregate(rating=Avg("rating"))
+    reviews = ProductReview.objects.filter(product=product).order_by("-date")
     product_images = product.product_images.all()
+    review_form = ProductReviewForm()
+
+    make_review = True
+
+    if request.user.is_authenticated:
+        user_review_count = ProductReview.objects.filter(user=request.user, product=product).count()
+
+        if user_review_count > 0:
+            make_review = False
 
     context = {
-        'product': product,
+        "make_review": make_review,
+        "p": product,
         "products": products,
+        "average_rating": average_rating,
+        "reviews": reviews,
+        "review_form": review_form,
         "product_images": product_images,
        
     }
 
     return render(request, 'product-details.html', context)
 
+@login_required
+def add_to_cart(request):
+    # Ensure qty is an integer from the GET request
+    try:
+        qty = int(request.GET['qty'])  # Convert qty to integer
+    except ValueError:
+        qty = 1  # Default to 1 if there's an issue with the input
+
+    cart_product = {}
+    cart_product[str(request.GET['id'])] = {
+        'title': request.GET['title'],
+        'qty': qty,  # Store qty as an integer
+        'price': request.GET['price'],
+        'image': request.GET['image'],
+        'pid': request.GET['pid'],
+    }
+
+    # Check if 'cart_data_obj' already exists in the session
+    if 'cart_data_obj' in request.session:
+        if str(request.GET['id']) in request.session['cart_data_obj']:
+            cart_data = request.session['cart_data_obj']
+            cart_data[str(request.GET['id'])]['qty'] += qty  # Add to the existing qty
+            request.session['cart_data_obj'] = cart_data
+        else:
+            cart_data = request.session['cart_data_obj']
+            cart_data.update(cart_product)
+            request.session['cart_data_obj'] = cart_data
+    else:
+        # If no cart exists in session, initialize it with the new product
+        request.session['cart_data_obj'] = cart_product
+
+    # Calculate the total number of items in the cart, considering quantity
+    total_items = sum(int(item['qty']) for item in request.session['cart_data_obj'].values()) 
+
+    return JsonResponse({
+        "data": request.session['cart_data_obj'],
+        'totalcartitems': total_items  # Total number of items considering quantities
+    })
+
+
+
+
+def cart_view(request):
+    cart_total_amount = 0
+    if "cart_data_obj" in request.session:
+        for p_id, item in request.session["cart_data_obj"].items():
+            try:
+                qty = int(item["qty"])  # Ensure qty is an integer
+                
+                # Clean price value
+                price = str(item["price"]).replace(",", "")  # Remove commas
+                if price.count('.') > 1:
+                    price = price.split('.')[0] + '.' + price.split('.')[1]  
+                price = price.split()[0] 
+
+              
+                item["price"] = float(price)  
+                
+                cart_total_amount += qty * float(price)  
+            except (ValueError, KeyError, TypeError) as e:
+                print(f"Error processing item {p_id}: {e}")
+                continue  
+
+        return render(request, "cart.html", {
+            "cart_data": request.session['cart_data_obj'],
+            'totalcartitems': len(request.session['cart_data_obj']),
+            "cart_total_amount": cart_total_amount
+        })
+    else:
+        messages.warning(request, 'Your cart is empty!')
+        return redirect("core:home")
+@login_required
+def checkout(request): 
+    cart_total_amount = 0
+    if "cart_data_obj" in request.session:
+        for p_id, item in request.session["cart_data_obj"].items():
+            try:
+                qty = int(item["qty"])  # Ensure qty is an integer
+                
+                # Clean price value
+                price = str(item["price"]).replace(",", "")  # Remove commas
+                if price.count('.') > 1:
+                    price = price.split('.')[0] + '.' + price.split('.')[1]  
+                price = price.split()[0] 
+
+              
+                item["price"] = float(price)  
+                
+                cart_total_amount += qty * float(price)  
+            except (ValueError, KeyError, TypeError) as e:
+                print(f"Error processing item {p_id}: {e}")
+                continue  
+
+     
+    return render(request, "checkoutn.html", {
+            "cart_data": request.session['cart_data_obj'],
+            'totalcartitems': len(request.session['cart_data_obj']),
+            "cart_total_amount": cart_total_amount
+        })
+
+
+def customer_dashboard(request):
+
+    orders = CartOrder.objects.filter(user=request.user)
+    context ={
+        "orders" : orders
+    }
+    return render(request, 'customer_dashboard.html', context)
+
+def delete_item_from_cart(request):
+    product_id = request.GET.get('id')
+    if not product_id:
+        return JsonResponse({'error': 'Product ID not provided'}, status=400)
+    
+    if "cart_data_obj" in request.session:
+        cart_data = request.session['cart_data_obj']
+        
+        # Ensure the product_id exists in the cart before trying to delete it
+        if product_id in cart_data:
+            del cart_data[product_id]  # Delete the product from the cart
+            # Update session
+            request.session['cart_data_obj'] = cart_data  # Ensure session is updated immediately
+
+    # Recalculate the total cart amount
+    cart_total_amount = 0
+    total_items = 0
+    if "cart_data_obj" in request.session:
+        for p_id, item in request.session["cart_data_obj"].items():
+            try:
+                qty = int(item["qty"])  # Ensure qty is an integer
+                
+                # Clean price value
+                price = str(item["price"]).replace(",", "")  # Remove commas
+                if price.count('.') > 1:
+                    price = price.split('.')[0] + '.' + price.split('.')[1]  # Ensure only one decimal point
+                price = price.split()[0]  # Remove any extra characters (e.g., spaces)
+
+                # Store cleaned price back in the item
+                item["price"] = float(price)  # Convert price to float to ensure proper formatting
+                
+                # Calculate total price
+                cart_total_amount += qty * float(price)
+                total_items += qty  # Keep track of total items (including quantity)
+            except (ValueError, KeyError, TypeError) as e:
+                print(f"Error processing item {p_id}: {e}")
+                continue  # Skip any malformed item data
+
+    # Render the updated cart HTML
+    context = render_to_string("core/async/cart-list.html", {
+        "cart_data": request.session['cart_data_obj'],
+        'totalcartitems': total_items,
+        "cart_total_amount": cart_total_amount
+    })
+
+    # Return updated cart data as JSON response
+    return JsonResponse({
+        'data': context, 
+        'totalcartitems': total_items,
+        'cart_total_amount': cart_total_amount
+    })
+
+
+def update_cart(request):
+    product_id = request.GET.get('id')
+    product_qty = request.GET['qty']
+    
+    if not product_id:
+        return JsonResponse({'error': 'Product ID not provided'}, status=400)
+    
+    if "cart_data_obj" in request.session:
+        cart_data = request.session['cart_data_obj']
+    
+        if product_id in cart_data:
+            # Correct the dictionary access with square brackets
+            cart_data[str(request.GET['id'])]['qty'] = product_qty
+            request.session['cart_data_obj'] = cart_data  
+
+    # Recalculate the total cart amount
+    cart_total_amount = 0
+    total_items = 0
+    if "cart_data_obj" in request.session:
+        for p_id, item in request.session["cart_data_obj"].items():
+            try:
+                qty = int(item["qty"])  # Ensure qty is an integer
+                
+                # Clean price value
+                price = str(item["price"]).replace(",", "")  # Remove commas
+                if price.count('.') > 1:
+                    price = price.split('.')[0] + '.' + price.split('.')[1]  # Ensure only one decimal point
+                price = price.split()[0]  # Remove any extra characters (e.g., spaces)
+
+                # Store cleaned price back in the item
+                item["price"] = float(price)  # Convert price to float to ensure proper formatting
+                
+                # Calculate total price
+                cart_total_amount += qty * float(price)
+                total_items += qty  # Keep track of total items (including quantity)
+            except (ValueError, KeyError, TypeError) as e:
+                print(f"Error processing item {p_id}: {e}")
+                continue  # Skip any malformed item data
+
+    # Render the updated cart HTML
+    context = render_to_string("core/async/cart-list.html", {
+        "cart_data": request.session['cart_data_obj'],
+        'totalcartitems': total_items,
+        "cart_total_amount": cart_total_amount
+    })
+
+    # Return updated cart data as JSON response
+    return JsonResponse({
+        'data': context, 
+        'totalcartitems': total_items,
+        'cart_total_amount': cart_total_amount
+    })
+def payment_completed(request):
+
+    cart_total_amount = 0
+    total_items = 0
+    if "cart_data_obj" in request.session:
+        for p_id, item in request.session["cart_data_obj"].items():
+            try:
+                qty = int(item["qty"])  # Ensure qty is an integer
+                
+                # Clean price value
+                price = str(item["price"]).replace(",", "")  # Remove commas
+                if price.count('.') > 1:
+                    price = price.split('.')[0] + '.' + price.split('.')[1]  # Ensure only one decimal point
+                price = price.split()[0]  # Remove any extra characters (e.g., spaces)
+
+                # Store cleaned price back in the item
+                item["price"] = float(price)  # Convert price to float to ensure proper formatting
+                
+                # Calculate total price
+                cart_total_amount += qty * float(price)
+                total_items += qty  # Keep track of total items (including quantity)
+            except (ValueError, KeyError, TypeError) as e:
+                print(f"Error processing item {p_id}: {e}")
+                continue  # Skip any malformed item data
+    return render(request, "completed_payment.html", {
+            "cart_data": request.session['cart_data_obj'],
+            'totalcartitems': len(request.session['cart_data_obj']),
+            "cart_total_amount": cart_total_amount
+        })
 
 class VendorListView(ListView):
     model = Vendors
@@ -416,4 +710,58 @@ def delete_category(request, cid):
     return render(request, 'delete_category.html', {'category': category})
 
 
+def ajax_add_review(request, pid):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'bool': False, 'error': 'User not authenticated'}, status=401)
 
+    try:
+        # Try to retrieve the product by its pid
+        product = Product.objects.get(pid=pid)
+    except Product.DoesNotExist:
+        # If the product doesn't exist, return a 404 error
+        return JsonResponse({'bool': False, 'error': 'Product not found'}, status=404)
+
+    # Get review and rating from the request
+    review = request.POST.get('review', '').strip()
+    rating = request.POST.get('rating')
+
+    # Ensure review and rating are provided
+    if not review or not rating:
+        return JsonResponse({'bool': False, 'error': 'Review or rating missing'}, status=400)
+
+    try:
+        # Try to convert rating to an integer, if it fails, return a 400 error
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            # Ensure the rating is within a valid range (e.g., 1 to 5)
+            return JsonResponse({'bool': False, 'error': 'Rating must be between 1 and 5'}, status=400)
+    except ValueError:
+        return JsonResponse({'bool': False, 'error': 'Invalid rating value'}, status=400)
+
+    # Create the product review
+    review_instance = ProductReview.objects.create(
+        user=request.user,  # Use the authenticated user
+        product=product,
+        review=review,
+        rating=rating,
+    )
+
+    # Prepare the context for the response
+    context = {
+        'user': request.user.username,  # Display the username
+        'review': review_instance.review,
+        'rating': review_instance.rating,
+    }
+
+    # Calculate the average rating for the product
+    average_reviews = ProductReview.objects.filter(product=product).aggregate(rating=Avg("rating"))
+
+    # Return the response with the created review and average rating
+    return JsonResponse(
+        {
+            'bool': True,
+            'context': context,
+            'average_reviews': average_reviews['rating'],  # Extract the average rating value
+        }
+    )

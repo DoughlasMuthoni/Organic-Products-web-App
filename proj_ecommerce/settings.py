@@ -143,7 +143,7 @@ JAZZMIN_SETTINGS ={
     'site_header': "My shop",
     'copyright': "My-shop.com",
 }
-
+LOGIN_URL = "user_authens:sign-in"
 
 
 # settings.py

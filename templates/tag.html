@@ -16,7 +16,7 @@
                 <div class="breadcrumb__text">
                     <h2>{{tag.name}}</h2>
                     <div class="breadcrumb__option">
-                        <a href="./index.html">Home</a>
+                        <a href="{% url 'core:home' %}">Home</a>
                         <span>Shop</span>
                     </div>
                 </div>
@@ -43,43 +43,47 @@
         <div class="row">
             {% for p in products %}
             
-                <div class="col-lg-3">
-                    <div class="product__discount__item">
-                        <a href="{% url 'core:pro-details' p.pid %}">
-                        <div class="product__discount__item__pic set-bg rounded-sm position-relative" data-setbg="{{p.image.url}}">
-                         
-                            <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
-                                <span>-{{ p.get_percentage|floatformat:0}}%</span>
-                            </div>
-                            <ul class="product__item__pic__hover">
-                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                            </ul>
+            <div class="col-lg-3">
+                <div class="product__discount__item">
+                    <a href="{% url 'core:pro-details' p.pid %}">
+                    <div class="product__discount__item__pic set-bg rounded-sm position-relative" data-setbg="{{p.image.url}}">
+                     
+                        <div class="position-absolute top-0 start-0 bg-danger text-white py-1 px-2 fw-bold rounded-pill">
+                            <span>-{{ p.get_percentage|floatformat:0}}%</span>
                         </div>
-                        <div class="product__discount__item__text">
-                            <div>
-                            <span class =" font-small text-muted">{{ p.Category }}</span>
-                         </div>
-                            <h5><a href="{% url 'core:pro-details' p.pid %}">{{ p.title }}</a></h5>
-                            <div class="product__details__rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-half-o"></i>
-                                <span>(18 reviews)</span>
-                            </div>
-                            <div>
-                            <span class =" font-small text-muted">{{ p.vendor }}</span>
-                            </div>
-                            <div class="product__item__price">Ksh{{ p.price }} </div>
-                            <!-- <div class="product__item__price"><span>Ksh{{ p.old_price }}</span></div> -->
+                        <ul class="product__item__pic__hover">
+                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="product__discount__item__text">
+                        <div>
+                        <span class =" font-small text-muted">{{ p.Category }}</span>
+                     </div>
+                        <h5><a href="{% url 'core:pro-details' p.pid %}">{{ p.title }}</a></h5>
+                        <div class="product__details__rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-half-o"></i>
+                            <span>(18 reviews)</span>
                         </div>
+                        <div>
+                        <span class =" font-small text-muted">{{ p.vendor }}</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <del>Ksh {{ p.old_price }}</del>
+                            <span class="text-dark fw-semibold">Ksh{{ p.price }}</span>
+                            <span class="badge border border-dark-subtle rounded-0 fw-normal px-1 fs-7 lh-1 text-body-tertiary">10% OFF</span>
+                        </div>
+                        
                     </div>
                 </div>
-                
-            {% endfor %}
+            </div>
+            
+        {% endfor %}
         </div>
     </div>
 </section>

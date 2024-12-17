@@ -41,6 +41,13 @@ urlpatterns =[
     path('product_purchase/', views.product_purchase, name='product_purchase'),
     path('edit-product/<int:product_id>/', views.edit_product, name='edit-product'),
     path('delete-product/<int:product_id>/', views.delete_product, name='delete-product'),
-   
- 
+    path('ajax-add-review/<str:pid>/', views.ajax_add_review, name="ajax-add-review"),
+    path('add-to-cart/', views.add_to_cart, name="add-to-cart"),
+    path('cart/', views.cart_view, name="cart"),
+    path('delete-from-cart/', views.delete_item_from_cart, name="delete-from-cart"),
+    path('update-cart/', views.update_cart, name="update-cart"),
+    path('checkoutn/', views.checkout, name='checkoutn'),
+    path('completed-payment/', views.payment_completed, name='completed-payment'),
+    path('customer-dashboard/', views.customer_dashboard, name='customer-dashboard'),
+
 ]
