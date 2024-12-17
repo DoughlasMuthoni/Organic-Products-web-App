@@ -5,3 +5,5 @@ env_organicFood/
 proj_ecommerce/__pycache__/
 user_authens/__pycache__/
 user_authens/migrations/__pycache__/
+templates/trash/
+templates/order_confirmation_email.html
