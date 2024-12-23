@@ -54,7 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
     # Optionally, limit what fields are displayed in the edit form in the admin
     fieldsets = (
         (None, {
-            'fields': ('title', 'user', 'category', 'vendor', 'description', 'price','old_price', 'tags', 'image', 'stock_count', 'life', 'type', 'featured', 'product_status', 'status', 'in_stock', 'mfd', 'digital')
+            'fields': ('title', 'user', 'category', 'vendor', 'description', 'price','old_price', 'tags', 'image', 'stock_count', 'life', 'type', 'featured', 'product_status', 'status', 'in_stock', 'mfd', 'digital', 'sku')
         }),
     )
 class  CategoryAdmin(admin.ModelAdmin):
@@ -70,10 +70,11 @@ class VendorAdmin(admin.ModelAdmin):
     ordering = ['-date']
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display =[ 'user', 'price', 'paid_status', 'order_date']
+    list_editable = ['paid_status','product_status']
+    list_display =[ 'user', 'price', 'paid_status', 'order_date', 'product_status']
 
 class CartOrderItemAdmin(admin.ModelAdmin):
-    list_display =[ 'order', 'invoice_no', 'item', 'image', 'qty', 'price', 'total', 'product_status']
+    list_display =[ 'order', 'invoice_no', 'item', 'image', 'qty', 'price', 'total']
 
 class ProductReviewAdmin(admin.ModelAdmin):
     list_display =[ 'user', 'product', 'review', 'rating']
@@ -83,6 +84,7 @@ class  WishlistAdmin(admin.ModelAdmin):
 
 
 class  AddressAdmin(admin.ModelAdmin):
+    list_editable = ['address', 'status']
     list_display = [ 'user', 'address', 'status']
 
 

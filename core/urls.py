@@ -9,8 +9,8 @@ urlpatterns =[
     path('', views.indexPage, name="home"),
     #products
     path('product/', views.product_list_views, name="product-list"),
-    path('product-cart/', views.product_cart_views, name="product-cart"),
-    path('checkout/', views.checkout_view, name='checkout'),
+    
+   
     path('pro-details/<str:pid>/', views.pro_details, name='pro-details'),
 
     #categories
@@ -38,7 +38,7 @@ urlpatterns =[
     path('filter-products/', views.filter_product, name="filter-product"),
     path('add-product/', views.add_product, name='add-product'),
     path('product_list_ui/', views.product_list_ui, name='product_list_ui'),
-    path('product_purchase/', views.product_purchase, name='product_purchase'),
+   
     path('edit-product/<int:product_id>/', views.edit_product, name='edit-product'),
     path('delete-product/<int:product_id>/', views.delete_product, name='delete-product'),
     path('ajax-add-review/<str:pid>/', views.ajax_add_review, name="ajax-add-review"),
@@ -49,5 +49,10 @@ urlpatterns =[
     path('checkoutn/', views.checkout, name='checkoutn'),
     path('completed-payment/', views.payment_completed, name='completed-payment'),
     path('customer-dashboard/', views.customer_dashboard, name='customer-dashboard'),
-
+     path('dashboard/order/<int:id>/', views.order_details, name='order_details'),
+    path('make-default-address/',views.make_address_default, name="make-default-address"),
+    path('wishlist/', views.wishlist_view, name="wishlist"),
+    path('add-to-wishlist/', views.add_to_wishlist, name="add-to-wishlist"),
+    path('wishlist/count/', views.get_wishlist_count, name='wishlist_count'),
+    path('remove-from-wishlist/', views.remove_wishlist, name='remove_wishlist'),
 ]

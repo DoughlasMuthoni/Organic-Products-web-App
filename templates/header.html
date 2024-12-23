@@ -10,8 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
-<!-- j query -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}" type="text/css">
@@ -85,8 +84,7 @@
                             <li><a href="{% url 'core:category-list' %}">Categories</a></li>
                         </ul>
                     </li>
-                {% else %}
-                    <li><a href="{% url 'core:product-cart' %}">Make an Order</a></li>
+                
                 {% endif %}
             {% else %}
                 <li><a href="{% url 'user_authens:sign-in' %}">Login</a></li>
@@ -186,14 +184,14 @@
             </div>
       
             <!-- Wishlist with Icon -->
-            <a href="#" class="btn btn-success"><span>(1)</span>
-              <i class="fa fa-heart"></i> Wishlist
+            <a href="{%  url 'core:wishlist' %}" class="btn btn-success">
+                <i class="fa fa-heart " id="wishlist-count"><span> {{ wishlist_count }}</span></i> </a> 
             </a>
       
             <!-- Cart with Icon -->
             <a href="{% url 'core:cart' %}" class="btn btn-success">
-                <i class="fa fa-shopping-cart cart-items-count"></i> 
-                Cart <span>({{ request.session.cart_data_obj|length }})</span>
+                <i class="fa fa-shopping-cart cart-items-count"><span> {{ request.session.cart_data_obj|length }} </span></i>
+                
             </a>
             
       
@@ -203,10 +201,11 @@
                 <i class="fa fa-user"></i> Account
               </button>
               <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> My Accounts</a></li></a></li>
+                <li><a class="dropdown-item" href="{% url 'core:customer-dashboard' %}"><i class="fas fa-user"></i> My Accounts</a></li></a></li>
+                <li><a class="dropdown-item" href="{% url 'userAdmin:dashboard' %}"><i class="fas fa-user"></i>Admin Account</a></li></a></li>
                 <li><a class="dropdown-item" href="#"><i class="fas fa-truck"></i> Order Tracking</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-cogs"></i> Settings</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-list"></i> Switchlist</a></li>
+                <li><a class="dropdown-item" href="{% url 'user_authens:settings' %}"><i class="fas fa-cogs"></i> Settings</a></li>
+                <li><a class="dropdown-item" href="{% url 'core:wishlist' %}"><i class="fas fa-list"></i> Switchlist</a></li>
                 
               </ul>
             </div>
@@ -243,8 +242,7 @@
                                         <li><a href="{% url 'core:category-list' %}">Categories</a></li>
                                     </ul>
                                 </li>
-                            {% else %}
-                                <li><a href="{% url 'core:product-cart' %}">Make an Order</a></li>
+                            
                             {% endif %}
                         {% else %}
                             <li><a href="{% url 'user_authens:sign-in' %}">Login</a></li>

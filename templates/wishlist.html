@@ -1,0 +1,67 @@
+
+
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block title %} <title>Wishlist</title> {% endblock %}
+
+{% block content %}
+
+<body id="wishlist-list">
+    <div class="container mt-5">
+        <h2>Your Wishlist</h2>
+        <strong>{{wishlist.product.title}}</strong><br>
+        <div class="table-responsive">
+            <table class="table table-bordered wishlist-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="form-check-input">
+                        </th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Stock Status</th>
+                        <th>Action</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wishlist in wishlist %}
+                    <!-- Wishlist Row 3 -->
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input"></td>
+                        <td>
+                            <div>
+                                <img  style="width: 70px; height: 70px;"src="{{wishlist.product.image.url}}" alt="">
+                                <strong>{{wishlist.product.title}}</strong><br>
+                                <span>⭐⭐⭐⭐⭐ (40)</span>
+                            </div>
+                        </td>
+                        <td class="price current-product-price-{{wishlist.product.id}}"> Ksh {{wishlist.product.price}}</td>
+                        <td class="stock-status">{% if wishlist.product.in_stock %} In_Stock {% else %} Out of Stock {% endif %}</td>
+                        <td>
+
+                            <input type="hidden" value="1" id="product-quantity" class=" product-quantity-{{wishlist.product.id}}">
+                            <input type="hidden" class="product-pid-{{wishlist.product.id}}" value="{{wishlist.product.pid}}">
+                            <input type="hidden" class="product-image-{{wishlist.product.id}}" value="{{ wishlist.product.image.url }}">
+                            <input type="hidden" class="product-id-{{wishlist.product.id}}" value="{{wishlist.product.id}}">
+                            <input type="hidden" class="product-title-{{wishlist.product.id}}" value="{{wishlist.product.title}}">
+                            <button class="btn btn-success btn-sm add-to-cart-btn" data-index="{{wishlist.product.id}}" id="add-to-cart-btn"> Add to Cart</button>
+                        </td>
+                        <td>
+                            <button style="border: none; background: none;" class="text-body delete-wishlist-product" data-wishlist-product="{{wishlist.id}}">
+                                <i class="fa fa-times remove-icon"></i>
+                            </button>
+                            
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+   
+</body>
+
+{% endblock %}

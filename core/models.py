@@ -7,7 +7,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 
 STATUS_CHOICE ={
-    ("process", "Processing"),
+    ("Processing", "Processing"),
     ("shipped", "Shipped"),
     ("delivered", "Delivered"),
 }
@@ -97,8 +97,8 @@ class Product (models.Model):
     vendor = models.ForeignKey(Vendors, on_delete=models.SET_NULL, null=True, related_name="vendors")
     image = models.ImageField(upload_to="category", default="product.png")
     description =RichTextUploadingField(null=True, blank =True, default="This is a product")
-    price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="1.99") 
-    old_price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="2.99")
+    price = models.DecimalField(max_digits=12, decimal_places=2, default="1.99") 
+    old_price = models.DecimalField(max_digits=12, decimal_places=2, default="2.99")
     mfd = models.DateTimeField(auto_now_add=False, null=True, blank=True) 
     type = models.CharField(max_length=100, default="organic",null=True, blank=True) 
     stock_count = models.CharField(max_length=100, default="8",null=True, blank=True) 
@@ -121,10 +121,10 @@ class Product (models.Model):
 
 
     def product_image(self):
-        return mark_safe('<img src = "%s" width ="50" height ="50"/>' % (self.image.url))
-    
-    def __str__(self) :
-        return self.title
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="50" height="50"/>')
+        return "No Image Available"
+
     
     def get_percentage(self):
         new_price = (self.price / self.old_price) * 100
@@ -141,12 +141,16 @@ class Meta :
         
 #############cart orderitems and address ########################
 #############cart orderitems and address ########################
+from django.utils.timezone import now
 class CartOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="1.99") 
+    price = models.DecimalField(max_digits=12, decimal_places=2, default="1.99") 
+    sku = ShortUUIDField(unique=True, length=8, max_length=15, prefix="sku", alphabet="1234567890")
+
+    full_name = models.CharField(max_length=255)
     paid_status = models.BooleanField(default=False)
-    order_date = models.DateField(auto_now_add=True)
-    product_status = models.CharField(max_length=200)
+    order_date = models.DateField(auto_now_add=False, default=now)
+    product_status = models.CharField(choices=STATUS_CHOICE, max_length=200, default="Processing")
 
 
     class Meta :
@@ -154,19 +158,21 @@ class CartOrder(models.Model):
 
 class CartOrderItems(models.Model):
     order = models.ForeignKey(CartOrder, on_delete=models.CASCADE)
-    product_status = models.CharField(max_length=200)
+    product_status = models.CharField(choices=STATUS_CHOICE, max_length=200, default="Processing")
     item = models.CharField(max_length=200)
     invoice_no = models.CharField(max_length=200)
-    image = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='order_images/')  # Updated field
     qty = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=999999999999, decimal_places=2, default="1.99") 
-    total = models.DecimalField(max_digits=999999999999, decimal_places=2, default="1.99") 
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=100.00) 
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=100.00) 
 
-    class Meta :
+    class Meta:
         verbose_name_plural = "Cart Order Items"
 
     def order_image(self):
-        return mark_safe('<img src = "/media/%s" width ="50" height ="50"/>' % (self.image))
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="50" height="50"/>')
+        return "No Image Available"
 
 
 class ProductReview(models.Model):
@@ -199,21 +205,11 @@ class Wishlist(models.Model):
     
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True) 
-    address = models.CharField(max_length=100, null=False, blank=True)  
+    address = models.CharField(max_length=100, null=False, blank=False, default="none")  
+    contact = models.CharField(max_length=100, null=False, blank=True)  
     status = models.BooleanField(default=False)  
     class Meta:
         verbose_name_plural = "Addresses"  
-
-
-class Cart_purchase(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-class CartItem_purchase(models.Model):
-    cart = models.ForeignKey(Cart_purchase, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 

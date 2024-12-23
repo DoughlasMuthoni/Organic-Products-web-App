@@ -4,12 +4,15 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 import requests
 from user_authens.credentials import LipanaMpesaPpassword, MpesaAccessToken
-from user_authens.forms import UserRegisterForm
+from user_authens.forms import ProfileForm, UserRegisterForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.conf import settings
-from user_authens.models import User
+from user_authens.models import Profile, User
 from django.contrib.auth.decorators import login_required
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # User = settings.AUTH_USER_MODEL 
 # Create your views here.
@@ -32,45 +35,38 @@ def register_view(request):
     }
     return render(request, 'user_authens/sign-up.html', context)
 
-
-
-          
-
-
 def login_view(request):
     if request.user.is_authenticated:
+        # Check if the user has a profile, and create one if it doesn't exist
+        if not hasattr(request.user, 'profile'):
+            Profile.objects.create(user=request.user)
         
         return redirect("core:home") 
-    
+
     if request.method == "POST":
         email = request.POST['email']
         password = request.POST['password']
-
-       
+        
         user = authenticate(request, username=email, password=password)
         
         if user is not None:
             login(request, user)
-            messages.success(request, f"hey You are logged in!")
+            messages.success(request, f"Hey, you are logged in!")
             return redirect("core:home")  
         else:
             messages.warning(request, "Invalid email or password. Please try again or create an account.")
     
-    context = {
-       
-    }
+    context = {}
 
     return render(request, "user_authens/sign-in.html", context)
-
+ 
 #logging out
 def logout_view(request):
     logout(request)
     messages.success(request, "You logged out!!!")
     next_page = request.GET.get('next', 'user_authens:sign-in')
     return redirect(next_page)
-        
-      
-         
+             
 #  Adding the mpesa functions
 #Display the payment form
 # @login_required
@@ -118,7 +114,68 @@ def stk(request):
         }
         response = requests.post(api_url, json=request, headers=headers)
         return HttpResponse("Successfully done!!")
-    
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 
-      
+post_save.connect(create_user_profile, sender=User)
+post_save.connect(save_user_profile, sender=User)
+
+
+
+
+def profile_edit(request):
+    profile = Profile.objects.get(user=request.user)
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.user = request.user
+            new_form .save()
+            messages.success(request, 'Profile saved successfully')
+            return redirect('core:customer-dashboard')  # Replace with the correct URL name
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {
+        "form": form,
+        "profile": profile,
+    }   
+    return render(request, 'profile_edit.html', context)
+
+def settings(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+
+        image = request.FILES.get('image')  
+        full_name = request.POST.get('full_name')  
+        phone = request.POST.get('phone')  
+        bio= request.POST.get('bio')  
+        address = request.POST.get('address')  
+        county = request.POST.get('county')  
+
+        if image != None:
+            profile.image = image
+
+        profile.full_name = full_name
+        profile.phone = phone
+        profile.bio = bio
+        profile.address = address
+        profile.county = county
+
+
+        profile.save()
+
+        messages.success(request, 'profile updated successfully!!!')
+        return redirect("user_authens:settings")
+    context ={
+        "profile": Profile
+    }    
+
+    return render(requests, 'core:settings.html')

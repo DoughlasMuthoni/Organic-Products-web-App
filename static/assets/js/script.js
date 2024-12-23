@@ -62,30 +62,24 @@ $('#commentForm').submit(function(e){
 
 
 
-$(".add-to-cart-btn").on("click", function(){
-    let this_val = $(this)
-    let index = this_val.attr("data-index")
+$(document).on("click", ".add-to-cart-btn", function(){
+    let this_val = $(this);
+    let index = this_val.attr("data-index");
 
-    let quantity  = $(".product-quantity-" + index).val()
-    let product_title = $(".product-title-" + index).val()
-
-    let product_id = $(".product-id-" + index).val()
-    let product_price = $(".current-product-price-" + index).text()
-    let product_pid = $(".product-pid-" + index).val()
-
-    
-    let product_image = $(".product-image-" + index).val()
-    
-
+    let quantity = $(".product-quantity-" + index).val();
+    let product_title = $(".product-title-" + index).val();
+    let product_id = $(".product-id-" + index).val();
+    let product_price = $(".current-product-price-" + index).text();
+    let product_pid = $(".product-pid-" + index).val();
+    let product_image = $(".product-image-" + index).val();
 
     console.log("Quantity", quantity);
     console.log("Title", product_title);
-    console.log("Price", product_price );
+    console.log("Price", product_price);
     console.log("Product ID", product_id);
     console.log("Product pid", product_pid);
     console.log("Product image", product_image);
     console.log("Current element", this_val);
-
 
     $.ajax({
         url: "/add-to-cart",
@@ -99,19 +93,88 @@ $(".add-to-cart-btn").on("click", function(){
         },
         dataType: "json",
         beforeSend: function(){
-            console.log("Adding product to cart");
+            console.log("Adding product to cart...");
         },
         success: function(response){
-            this_val.html("✔️")
+            this_val.html("✔️");
             console.log("Added product to cart...");
-            $(".cart-items-count").text(response.totalcartitems)
-
+            $(".cart-items-count").text(response.totalcartitems);
+        },
+        error: function(xhr, status, error){
+            console.log("Error:", error);
         }
+    });
+});
 
-    })
-})
     
+$(document).on("click", ".add-to-wishlist-btn", function(){
+    let product_id = $(this).attr("data-product-item");
+    let this_val = $(this);
 
+    console.log("This is the ID", product_id);
+    console.log("This is the element", this_val);
+
+    $.ajax({
+        url: "/add-to-wishlist/",  // Your URL for adding the product to the wishlist
+        data: {
+            "id": product_id
+        },
+        dataType: "json",
+        beforeSend: function(){
+            this_val.html("✔️");  // Change button text to indicate loading
+        },
+        success: function(response){
+            if(response.bool === true){
+                console.log("Added to wishlist...");
+                
+                // Fetch the updated wishlist count
+                $.ajax({
+                    url: "/wishlist/count/",  // Your URL to get the updated wishlist count
+                    dataType: "json",
+                    success: function(countResponse) {
+                        if(countResponse.wishlist_count !== undefined){
+                            // Update the wishlist count displayed on the page
+                            $("#wishlist-count").text(countResponse.wishlist_count);  // Assuming you have an element with id 'wishlist-count'
+                        }
+                    },
+                    error: function() {
+                        console.log("Error fetching wishlist count.");
+                    }
+                });
+            }
+        },
+        error: function(){
+            console.log("Error adding to wishlist.");
+        }
+    });
+});
+
+$(document).on("click", ".delete-wishlist-product", function (event) {
+    event.preventDefault(); 
+    let wishlist_id = $(this).attr("data-wishlist-product");
+    console.log("Wishlist ID", wishlist_id);
+
+    $.ajax({
+        url: "/remove-from-wishlist",
+        data: { id: wishlist_id },
+        dataType: "json",
+        beforeSend: function () {
+            console.log("Deleting your wish...");
+        },
+        success: function (response) {
+            if (response.bool) {
+                // Update the wishlist DOM without refreshing
+                $("#wishlist-list").html(response.data);
+                console.log("Wishlist updated successfully!");
+            } else {
+                console.error("Error:", response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", error);
+        },
+    });
+});
 
 $(".delete-product").on("click", function() {
     let product_id = $(this).attr("data-product");  // Get the product ID from the button's data attribute
@@ -208,6 +271,30 @@ $(".update-product").on("click", function() {
     });
 });
 
+$(document).on("click", ".make-default-address", function(){
+    let id = $(this).attr("data-address-id")
+    let this_val = $(this)
+    console.log("ID is", id);
+    console.log("Element is", this_val);
+
+    $.ajax({
+        url: "/make-default-address",
+        data: {
+            "id": id  
+        },
+        dataType: "json",
+        success: function(response){
+            console.log(" Address made default...........");
+            if (response.boolean == true){
+                $(".check").hide(); 
+                $(".action_btn").show();  // Fixed: Removed template literal
+
+                $(".check" + id).show();  // Fixed: Correctly concatenated the class selector
+                $(".button" + id).hide();  // Fixed: Correctly concatenated the class selector
+            }
+        }
+    })
+})
 
     
 

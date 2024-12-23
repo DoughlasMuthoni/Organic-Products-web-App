@@ -1,0 +1,56 @@
+
+
+
+<!-- Invoice Section -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+      margin: 0 auto;
+      max-width: 90%;
+      
+    }
+    </style>
+</head>
+<body>
+    <div class="col-4">
+        
+    </div>
+    <div id="invoice-section" class="table-container">
+        <h2 class="mb-4">Invoice</h2>
+        <table class="table table-striped table-bordered table-hover">
+          <thead class="table-success">
+            <tr>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product_id, item in cart_data.items %}
+            <tr>
+                <td>{{item.title}}</td>
+                <td>{{item.price}}</td>
+                <td>{{item.qty}}</td>
+                <td>Ksh  {% widthratio item.price 1 item.qty %}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td colspan="3" class="text-right font-weight-bold">Total</td>
+              <td> Ksh {{cart_total_amount|floatformat:2}}</td>
+              <h4 style="padding-bottom: 5%;">Invoice to: <span class="text-success">{{request.user|title}}</span></h4>
+            </tr>
+            
+          </tbody>
+        </table>
+        <div><h5> Hey, <span class="text-success">{{request.user|title}} </span>Thanks for shopping with us <strong> Be blessed!!</strong></h5></div>
+      </div>
+</body>
+</html>
+  

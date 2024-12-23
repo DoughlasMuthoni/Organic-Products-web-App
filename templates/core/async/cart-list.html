@@ -30,7 +30,7 @@
                                     </td>
                                     
                                     <td class="shoping__cart__price">
-                                    Ksh {{ item.price|floatformat:2 }}
+                                     <span>Ksh</span> {{ item.price|floatformat:2 }}
                                     </td>
                                     <td class="shoping__cart__quantity">
                                         <div class="quantity">
@@ -40,12 +40,12 @@
                                         </div>
                                     </td>
                                     <td class="shoping__cart__total">
-                                    Ksh  {% widthratio item.price 1 item.qty %}
+                                    <span>Ksh </span> {% widthratio item.price 1 item.qty %}
                                     </td>
                                     <td class="shoping__cart__item__close">
-                                    <button class="delete-product" data-product="{{product_id}}" style="border: none;"><span class="icon_close"></span></button> 
+                                    <button class="delete-product" data-product="{{product_id}}" style="border: none;"><i class="fa fa-times remove-icon"></i></button> 
                                     </td>
-                                    <td><button class="update-product" data-product="{{product_id}}" style="border: none;"><span><i class="fas fa-sync-alt fa-spin" ></i></span></button> </td>
+                                    <td><button class="update-product" data-product="{{product_id}}" style="border: none;"><span><i class="fas fa-sync-alt fa-spin text-success" ></i></span></button> </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -76,9 +76,9 @@
                     <div class="shoping__checkout">
                         <h5>Cart Total</h5>
                         <ul>
-                            <li>Subtotal <span> Ksh {{cart_total_amount|floatformat:2}}</span></li>
+                            <li>Subtotal <span>  <span>Ksh</span> {{cart_total_amount|floatformat:2}}</span></li>
                             <li>Shipping <span>Free</span></li>
-                            <li>Total <span>Ksh {{cart_total_amount|floatformat:2}}</span></li>
+                            <li>Total <span> <span>Ksh</span> {{cart_total_amount|floatformat:2}}</span></li>
                         </ul>
                         {% if totalcartitems %}
                             <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>

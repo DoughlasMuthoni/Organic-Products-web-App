@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #custom apps
     'core',
     'user_authens',
+    'userAdmin',
     #Third party
     'taggit',
     'ckeditor'
