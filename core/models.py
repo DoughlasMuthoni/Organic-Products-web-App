@@ -144,10 +144,8 @@ class Meta :
 from django.utils.timezone import now
 class CartOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=2, default="1.99") 
-    sku = ShortUUIDField(unique=True, length=8, max_length=15, prefix="sku", alphabet="1234567890")
-
-    full_name = models.CharField(max_length=255)
     paid_status = models.BooleanField(default=False)
     order_date = models.DateField(auto_now_add=False, default=now)
     product_status = models.CharField(choices=STATUS_CHOICE, max_length=200, default="Processing")

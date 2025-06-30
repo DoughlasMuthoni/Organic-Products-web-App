@@ -69,12 +69,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#" onclick="showContent('products')">
+                            <a class="nav-link text-dark" href="{% url 'core:product_list_ui' %}" onclick="showContent('products')">
                                 <i class="fas fa-box"></i> Products
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#" onclick="showContent('orders')">
+                            <a class="nav-link text-dark" href="" onclick="showContent('orders')">
                                 <i class="fas fa-shopping-cart"></i> Orders
                             </a>
                         </li>
@@ -84,7 +84,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#" onclick="showContent('add-product')">
+                            <a class="nav-link text-dark" href="{% url 'core:add-product' %}" onclick="showContent('add-product')">
                                 <i class="fas fa-plus"></i> Add Product
                             </a>
                         </li>
@@ -163,8 +163,8 @@
                             <tbody>
                                 {% for l in latest_orders %}
                                     <tr>
-                                        <td># {{ l.sku }}</td>
-                                        <td>{{ l.full_name }}</td>
+                                        <td># {{ l.id }}</td>
+                                        <td>{{ l.user }}</td>
                                         <td>{{ l.order_date }}</td>
                                         <td>Ksh {{ l.price }}</td>
                                         {% if l.paid_status == True %}
@@ -173,7 +173,8 @@
                                             <td><span class="badge bg-danger">Not Paid</span></td>
                                         {% endif %}
                                         <td>{{ l.product_status }}</td>
-                                        <td><button class="btn btn-sm btn-success">View Details</button></td>
+                                        <!-- <td><button class="btn btn-sm btn-success">View Details</button></td> -->
+                                        <td><a href="{% url 'core:order_details' l.id %}" class="btn btn-sm btn-success">View</a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -184,11 +185,97 @@
                 <div id="products" class="section hidden">
                     <h2>Products</h2>
                     <p>Manage your products here.</p>
+                    
+                        <h4 class="text-center mb-4">Product List</h4>
+                    
+                        <!-- Product Table -->
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h3 class="mb-0">Product Table</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3 text-end">
+                                    <a href="{% url 'core:add-product' %}" class="btn btn-success">Add New Product</a>
+                                </div>
+                    
+                                <!-- Table -->
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Product Title</th>
+                                            <th>Product Image</th>
+                                            <th>Category</th>
+                                            <th>Price (Ksh)</th>
+                                            <th>Stock Count</th>
+                                            <th>Status</th>
+                                            <th>Featured</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for product in products %}
+                                        <tr>
+                                            <td>{{ product.title }}</td>
+                                            <td>{{ product.image.url }}</td>
+                                            <td>{{ product.category }}</td>
+                                            <td>Ksh {{ product.price }}</td>
+                                            <td>{{ product.stock_count }}</td>
+                                            <td>{{ product.get_product_status_display }}</td>  <!-- Show status as a label -->
+                                            <td>{% if product.featured %}Yes{% else %}No{% endif %}</td>  <!-- Show "Yes" or "No" for featured -->
+                                            <td>
+                                                <a href="{% url 'core:edit-product' product.id %}" class="btn btn-success btn-sm">Edit</a> |
+                                                <a href="{% url 'core:delete-product' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">No products available.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    
                 </div>
 
                 <div id="orders" class="section hidden">
                     <h2>Orders</h2>
                     <p>View and manage orders here.</p>
+                </div>
+                
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Billing Name</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Payment Status</th>
+                            <th>Product Status</th>
+                            <th>View Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in orders %}
+                            <tr>
+                                <td># {{ l.id }}</td>
+                                <td>{{ l.user }}</td>
+                                <td>{{ l.order_date }}</td>
+                                <td>Ksh {{ l.price }}</td>
+                                {% if l.paid_status == True %}
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                {% else %}
+                                    <td><span class="badge bg-danger">Not Paid</span></td>
+                                {% endif %}
+                                <td>{{ l.product_status }}</td>
+                                <td><button class="btn btn-sm btn-success">View Details</button></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+               
+            </div>
                 </div>
 
                 <div id="shop-page" class="section hidden">

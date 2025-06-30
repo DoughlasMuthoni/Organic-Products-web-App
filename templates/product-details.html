@@ -94,17 +94,21 @@
             <div class="card-body">
                 <h5 class="card-title">Delivery</h5> 
                 <span>
-                    {% if address %}
-    Address: {{ address.address|default:"No address provided" }} 
-    <br>
-        {% if address.status == True %}
-            <span class="text-success">Verified Address</span>
-        {% else %}
-            <span class="text-danger">Unverified Address</span>
-        {% endif %}
+            {% if address %}
+                Address: {{ address.address }} 
+                <br>
+                <span class="text-success">Verified Address</span>
+            {% else %}
+                <span class="text-danger">Unverified Address</span>
+            {% endif %}
+
+        <!-- {% if address.status == True %}
+           
+        
+
     {% else %}
         <p>No address found. Please add an address.</p>
-    {% endif %}
+    {% endif %} -->
 
                 </span> 
                 <hr>
